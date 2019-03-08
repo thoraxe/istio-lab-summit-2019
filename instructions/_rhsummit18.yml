@@ -1,0 +1,22 @@
+id: "istio"
+name: "Getting Hands On With Istio on OpenShift"
+
+content:
+  url: https://raw.githubusercontent.com/jamesfalkner/istio-lab-summit-2018/master
+
+vars:
+  OPENSHIFT_MASTER: "https://openshift-GUID.rhpds.opentlc.com:8443"
+  APPS_SUFFIX: "apps.127.0.0.1.xip.io"
+  ISTIO_LAB_HOSTNAME: "openshift-GUID.rhpds.opentlc.com"
+
+modules:
+  activate:
+  - intro
+  - basic-routing
+  - graph-and-tracing
+  - fault-injection
+  - rate-limiting
+  - timeouts
+  - whitelisting
+  - blacklisting
+  - extra-credit
