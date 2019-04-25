@@ -1,0 +1,30 @@
+# TEB93D - Red Hat OpenShift Service Mesh in Action
+Thank you for signing up for an attending the lab on Red Hat OpenShift Service Mesh.
+
+## Getting Started
+The machine you are sitting at has the OpenShift CLI installed. Since the
+Service Mesh lab is running against OpenShift Container Platform 4, you will
+need to use `oc4` to interact with the API server.
+
+You can login using the following command:
+
+[source,bash,role="copypaste"]
+----
+oc4 login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }} {{ API_URL }}
+----
+
+The OpenShift Web Console is also available to you at the following URL:
+
+[source,role="copypaste"]
+----
+{{ MASTER_URL }}
+----
+
+You can login with:
+
+----
+Username: kubeadmin
+Password: {{ KUBEADMIN_PASSWORD }}
+----
+
+Now you are ready for the first lab. Click **Go To Next Module** to continue!

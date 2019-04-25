@@ -1,6 +1,3 @@
-config:
-  renderer: markdown
-
 modules:
   intro:
     name: Introduction and Setup

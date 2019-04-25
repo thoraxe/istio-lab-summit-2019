@@ -5,9 +5,9 @@ content:
   url: https://raw.githubusercontent.com/jamesfalkner/istio-lab-summit-2018/master
 
 vars:
-  OPENSHIFT_MASTER: "https://openshift-GUID.rhpds.opentlc.com:8443"
-  APPS_SUFFIX: "apps.127.0.0.1.xip.io"
-  ISTIO_LAB_HOSTNAME: "openshift-GUID.rhpds.opentlc.com"
+  KUBEADMIN_PASSWORD: "default"
+  API_URL: "default"
+  MASTER_URL: "default"
 
 modules:
   activate:
