@@ -21,7 +21,7 @@ Every pod deployed as part of the Service Mesh contains a proxy container respon
 Before we take a look at the Kiali console lets first generate some load on the Service Mesh.  From within a new terminal enter the following commands
 `export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')`
 
-`while : do ; curl http://${INGRESS_GATEWAY}/ ; sleep 1 ; done`
+`while true; do curl http://${INGRESS_GATEWAY}; sleep 1; done`
 
 ### Opening the Kiali console
 

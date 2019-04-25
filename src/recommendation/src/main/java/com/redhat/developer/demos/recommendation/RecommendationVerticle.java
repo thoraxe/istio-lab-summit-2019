@@ -12,13 +12,20 @@ import io.vertx.ext.web.RoutingContext;
 
 public class RecommendationVerticle extends AbstractVerticle {
 
-    private static final String RESPONSE_STRING_FORMAT = "recommendation v1 from '%s': %d\n";
+    private static final String RESPONSE_STRING_FORMAT = "recommendation %s from '%s': %d\n";
 
     private static final String HOSTNAME =
         parseContainerIdFromHostname(System.getenv().getOrDefault("HOSTNAME", "unknown"));
 
+    private static final String VERSION =
+        parseVersionFromHostname(System.getenv().getOrDefault("HOSTNAME", "unknown"));
+
     static String parseContainerIdFromHostname(String hostname) {
         return hostname.replaceAll("recommendation-v\\d+-", "");
+    }
+
+    static String parseVersionFromHostname(String hostname) {
+        return hostname.replaceAll("recommendation-", "").substring(0,2);
     }
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -65,7 +72,7 @@ public class RecommendationVerticle extends AbstractVerticle {
             ctx.response().setStatusCode(503).end(String.format("recommendation misbehavior from '%s'\n", HOSTNAME));
         } else {
             count++;
-            ctx.response().end(String.format(RESPONSE_STRING_FORMAT, HOSTNAME, count));
+            ctx.response().end(String.format(RESPONSE_STRING_FORMAT, VERSION, HOSTNAME, count));
         }
     }
 
