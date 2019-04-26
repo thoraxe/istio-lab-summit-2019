@@ -1,127 +1,267 @@
-# Fault Injection
+= Fault Injection
+include::_attributes.adoc[]
 
-This exercise shows how to inject faults and test the resiliency of your application. Istio provides a set of failure
-recovery features that can be taken advantage of by the services in an application. Features include:
+Apply some chaos engineering by throwing in some HTTP errors or network delays. Understanding failure scenarios is a critical aspect of microservices architecture (aka distributed computing)
 
-* Timeouts
-* Bounded retries with timeout budgets and variable jitter between retries
-* Limits on number of concurrent connections and requests to upstream services
-* Active (periodic) health checks on each member of the load balancing pool
-* Fine-grained circuit breakers (passive health checks) – applied per instance in the load balancing pool
+:toc:
 
-Together, these features enable the service mesh to tolerate failing nodes and prevent localized failures
-from cascading instability to other nodes.
+== What we will learn in this module
+This module will provide instruction on how to introduce service failures and delays to better understand, test, and design microservices
 
-## What you will learn
+[IMPORTANT]
+.Before Start
+====
+You should have only the following virtualservices and destinationrules in the `istio-tutorial` namespace
 
-You will apply some chaos engineering by throwing in some HTTP errors and network delays. Understanding failure
-scenarios is a critical aspect of microservices architecture (aka distributed computing)
+[source, bash,subs="+macros,+attributes"]
+----
+$ oc -n istio-tutorial get destinationrule
+No resources found.
 
-## HTTP Error 503
+$ oc -n istio-tutorial get virtualservice
+NAME       GATEWAYS             HOSTS   AGE
+customer   [customer-gateway]   [*]     18h
+----
 
-By default, recommendation v1 and v2 are being randomly load-balanced as that is the default behavior in Kubernetes/OpenShift
+====
 
-You can inject 503’s, for approximately 50% of the requests:
+[#503error]
+== HTTP Error 503
 
-~~~bash
-oc create -f ${ISTIO_LAB_HOME}/src/istiofiles/route-rule-recommendation-503.yml -n ${ISTIO_LAB_PROJECT}
-~~~
+By default, recommendation v1, v2 and v3 are being randomly load-balanced as that is the default behavior in Istio
 
-After a few seconds, access the service 10 times:
+[source,bash,subs="+macros,+attributes"]
+----
+$ oc -n istio-tutorial get pods -l app=recommendation
+NAME                                 READY   STATUS    RESTARTS   AGE
+recommendation-v1-7fbb8f794-ngw58    2/2     Running   0          21h
+recommendation-v2-77bc7bb94d-8wjxz   2/2     Running   0          17h
+recommendation-v3-5786cd744d-96q79   2/2     Running   0          17h
 
-~~~bash
-for i in $(seq 10); do
-  curl "http://customer-${ISTIO_LAB_PROJECT}.{{APPS_SUFFIX}}"
-done
-~~~
+$ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 26
+customer => preference => recommendation v2 from '74f48f4cbc-j7rfm': 27
+customer => preference => recommendation v3 from '588747fd55-m8mj9': 27
+customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 27
+customer => preference => recommendation v2 from '74f48f4cbc-j7rfm': 28
+customer => preference => recommendation v3 from '588747fd55-m8mj9': 28
+customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 28
+----
 
-You should see about half the time a failure `customer => 503 preference => 503 fault filter abort`.
+You can inject 503's, for approximately 50% of the requests. To see how this is done,
+take a look at link:http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/virtual-service-recommendation-503.yml[virtual-service-recommendation-503.yml]
 
-Remove the fault injector:
+[source,bash,subs="+macros,+attributes"]
+----
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: recommendation
+spec:
+  host: recommendation
+  subsets:
+  - labels:
+      version: v1
+    name: v1
+  - labels:
+      version: v2
+    name: v2
+  - labels:
+      version: v3
+    name: v3
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: recommendation
+spec:
+  hosts:
+  - recommendation
+  http:
+  - route:
+    - destination:
+        host: recommendation
+        subset: v1
+      weight: 34
+    - destination:
+        host: recommendation
+        subset: v2
+      weight: 33
+    - destination:
+        host: recommendation
+        subset: v3
+      weight: 33
+    fault:
+      abort:
+        percentage:
+          value: 50
+        httpStatus: 503
+---
+----
 
-~~~bash
-oc delete routerule/recommendation-503 -n ${ISTIO_LAB_PROJECT}
-~~~
+Note that this file creates 2 resources. First, a DestinationRule `recommendation` with
+subsets for v1, v2, and v3. Second, a VirtualService `recommendation` that splits traffic equally between
+v1, v2, and v3 but also introduces a 503 fault for 50% of the requests.
 
-## Delay
+NOTE: You may not see the 503 failures at 50% from the client due to the retry behavior in the lab
+environment. When the preference -> recommendation call fails it will be retried 3x. Thus there is
+a high probability that the client will not see a failure but you will see the failure rate is
+accurately reflected in the Kiali console.
 
-The most insidious of possible distributed computing faults is not a "down" service but a service that is
-responding slowly, potentially causing a cascading failure in your network of services.
+[source,bash,subs="+macros,+attributes"]
+----
+$ oc -n istio-tutorial create -f http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/virtual-service-recommendation-503.yml
+destinationrule.networking.istio.io/recommendation created
+virtualservice.networking.istio.io/recommendation created
 
-Inject a delay:
+$ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+customer => preference => recommendation v2 from '74f48f4cbc-j7rfm': 76
+customer => Error: 503 - preference => Error: 503 - fault filter abort
+customer => preference => recommendation v3 from '588747fd55-m8mj9': 82
+customer => Error: 503 - preference => Error: 503 - fault filter abort
+customer => Error: 503 - preference => Error: 503 - fault filter abort
+customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 76
+customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 77
+customer => preference => recommendation v3 from '588747fd55-m8mj9': 83
+customer => Error: 503 - preference => Error: 503 - fault filter abort
+customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 78
+----
 
-~~~bash
-oc create -f ${ISTIO_LAB_HOME}/src/istiofiles/route-rule-recommendation-delay.yml -n ${ISTIO_LAB_PROJECT}
-~~~
+=== Kiali's Graph
 
-Then hit the customer endpoint repeatedly:
+Within the Kiali UI select the *Graph* option from the left hand navigation and then choose
 
-~~~bash
-while true; do
-  curl "http://customer-${ISTIO_LAB_PROJECT}.{{APPS_SUFFIX}}"
-done
-~~~
+* Namespace: istio-tutorial
+* Versioned app graph
+* Requests percentage
+* Last 1m
+* Every 10s
 
-You will notice many requests to the customer endpoint now have a delay (the rule injects a 7 second delay half the time when
-the `recommendation` service is called).
+[#img-503]
+.Kiali Graph Showing 503 Failures
+image::503.png[]
 
-You can also see this in Jaeger by opening
-the Jaeger console once again (see above for how to access the URL).
-Select `recommendation` from the **Service** drop-down and click **Find Traces**.
-Some traces are fast, but some traces will show the delay:
+Note the 50% failure rate from preference to recommendation
 
-![Delay]({% image_path delay.png %})
+=== Clean up
 
-Remove the delay:
+[source,bash,subs="+macros,+attributes"]
+----
+$ oc -n istio-tutorial delete -f http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/virtual-service-recommendation-503.yml
+destinationrule.networking.istio.io "recommendation" deleted
+virtualservice.networking.istio.io "recommendation" deleted
+----
 
-~~~bash
-oc delete routerule/recommendation-delay -n ${ISTIO_LAB_PROJECT}
-~~~
+[#delay]
+== Delay
 
-## Retry
+The most insidious of possible distributed computing faults is not a "down" service but a
+service that is responding slowly, potentially causing a cascading failure in your network of services.
+To see how to inject such a delay, take a look at link:http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/virtual-service-recommendation-delay.yml[virtual-service-recommendation-delay.yml]
 
-Here we can force Istio to retry failed service calls so that the application doesn't have to deal with retrying.
+[source,bash,subs="+macros,+attributes"]
+----
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: recommendation
+spec:
+  host: recommendation
+  subsets:
+  - labels:
+      version: v1
+    name: v1
+  - labels:
+      version: v2
+    name: v2
+  - labels:
+      version: v3
+    name: v3
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: recommendation
+spec:
+  hosts:
+  - recommendation
+  http:
+  - route:
+    - destination:
+        host: recommendation
+        subset: v1
+      weight: 34
+    - destination:
+        host: recommendation
+        subset: v2
+      weight: 33
+    - destination:
+        host: recommendation
+        subset: v3
+      weight: 33
+    fault:
+      delay:
+        fixedDelay: 7.000s
+        percent: 50
+---
+----
 
-We will use Istio and return HTTP Error 503 about 50% of the time. Send all users to `v2` which will throw out some 503’s:
+Note that this file creates 2 resources. First, a DestinationRule `recommendation` with
+subsets for v1, v2, and v3. Second, a VirtualService `recommendation` that splits traffic equally between
+v1, v2, and v3 but also introduces a 7s delay for 50% of the requests.
 
-~~~bash
-oc create -f ${ISTIO_LAB_HOME}/src/istiofiles/route-rule-recommendation-v2_503.yml -n ${ISTIO_LAB_PROJECT}
-~~~
 
-Now, if you hit the customer endpoint several times, you should see some 503’s:
+[source,bash,subs="+macros,+attributes"]
+----
+$ oc -n istio-tutorial create -f http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/virtual-service-recommendation-delay.yml
+destinationrule.networking.istio.io/recommendation created
+virtualservice.networking.istio.io/recommendation created
+----
 
-~~~bash
-for i in $(seq 20); do
-  curl "http://customer-${ISTIO_LAB_PROJECT}.{{APPS_SUFFIX}}"
-done
-~~~
+And hit the customer endpoint
 
-Now add the retry rule to make Istio retry when a 503 is received:
+[source,bash,subs="+macros,+attributes"]
+----
+$ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+----
 
-~~~bash
-oc create -f ${ISTIO_LAB_HOME}/src/istiofiles/route-rule-recommendation-v2_retry.yml -n ${ISTIO_LAB_PROJECT}
-~~~
+You will notice many requests to the customer endpoint now have a delay.
+If you are monitoring the logs for recommendation v1, v2 and v3, you will also see the delay happens BEFORE the recommendation service is actually called
 
-After a few seconds, things will settle down and the calls should succeed 100% of the time as Istio will retry whenever
-a 503 is received:
+[source,bash,subs="+macros,+attributes"]
+----
+$ oc -n istio-tutorial logs -f recommendation-v#-XXXXXXXXXXXX -c recommendation
+Apr 26, 2019 9:31:09 PM com.redhat.developer.demos.recommendation.rest.RecommendationResource getRecommendations
+INFO: recommendation request from 7fbb8f794-ngw58: 8334
+Apr 26, 2019 9:31:17 PM com.redhat.developer.demos.recommendation.rest.RecommendationResource getRecommendations
+INFO: recommendation request from 7fbb8f794-ngw58: 8335
+----
 
-~~~bash
-for i in $(seq 20); do
-  curl "http://customer-${ISTIO_LAB_PROJECT}.{{APPS_SUFFIX}}"
-done
-~~~
+=== Kiali's Distributed Tracing
 
-> You may need to wait up to 30 seconds for the retry rule to take effect. Just run the above command again if you see
-any `503`'s. You should eventually not see any.
+Within the Kiali UI select the *Distributed Tracing* option from the left hand navigation and then choose
 
-Cleanup the retries and injected faults:
+* Namespace: istio-tutorial
+* Service: recommendation.istio-tutorial
 
-~~~bash
-oc delete routerule/recommendation-v2-retry routerule/recommendation-v2-503  -n ${ISTIO_LAB_PROJECT}
-~~~
+and finally press the *Search* button.
 
-# References
+[#img-503]
+.Kiali Graph Showing Delays
+image::delay.png[]
 
-* [Red Hat OpenShift](https://openshift.com){:target="_blank"}
-* [Learn Istio on OpenShift](https://learn.openshift.com/servicemesh){:target="_blank"}
-* [Istio Homepage](https://istio.io){:target="_blank"}
+Note that 50% of the traces are slightly over the artificial 7s delay while the other 50% are in the low ms range
+
+=== Clean up
+
+[source,bash,subs="+macros,+attributes"]
+----
+$ oc -n istio-tutorial delete -f http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/virtual-service-recommendation-delay.yml
+destinationrule.networking.istio.io "recommendation" deleted
+virtualservice.networking.istio.io "recommendation" deleted
+----
+
+== What we learned in this module
+Istio provides a simple mechanism to simulate service and network failures and delays to improve
+microservice testing and resiliency. Kiali provides a rich console to
+visualize the service failure rates and service delays.
