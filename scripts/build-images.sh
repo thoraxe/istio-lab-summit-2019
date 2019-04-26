@@ -3,7 +3,7 @@
 MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 MYHOME=${MYDIR}/..
 
-TAG_PREFIX=example
+TAG_PREFIX=${TAG_PREFIX:-example}
 
 function fail() {
 	echo $1
