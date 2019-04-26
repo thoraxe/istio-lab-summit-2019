@@ -25,7 +25,7 @@ spec:
       - env:
         - name: JAVA_OPTIONS
           value: -Xmx256m
-        image: example/recommendation:v1
+        image: quay.io/maistra_demos/recommendation:v1
         imagePullPolicy: IfNotPresent
         name: recommendation
         ports:
@@ -60,7 +60,7 @@ spec:
       - env:
         - name: JAVA_OPTIONS
           value: -Xmx256m
-        image: example/recommendation:v2
+        image: quay.io/maistra_demos/recommendation:v2
         imagePullPolicy: IfNotPresent
         name: recommendation
         ports:
@@ -95,7 +95,7 @@ spec:
       - env:
         - name: JAVA_OPTIONS
           value: -Xmx256m
-        image: example/recommendation:v3
+        image: quay.io/maistra_demos/recommendation:v3
         imagePullPolicy: IfNotPresent
         name: recommendation
         ports:
