@@ -29,11 +29,13 @@ To open the kiali console enter the following command within a new terminal
 
 `xdg-open https://$(oc get route -n istio-system kiali -o 'jsonpath={.spec.host}')`
 
+When prompted to login use the username *admin* and the password *admin*.
+
 ### Kiali's Graph
 
 Within the Kiali UI select the *Graph* option from the left hand navigation and then choose
 
-* Namespace: tutorial
+* Namespace: istio-tutorial
 * Versioned app graph
 * Requests percentage
 * Last 1m
@@ -49,8 +51,8 @@ You should now see the application graph showing traffic being created by our sc
 
 Within the Kiali UI select the *Distributed Tracing* option from the left hand navigation and then choose
 
-* Namespace: tutorial
-* Service: customer.tutorial
+* Namespace: istio-tutorial
+* Service: customer.istio-tutorial
 
 and finally press the *Search* button.
 

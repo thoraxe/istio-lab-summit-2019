@@ -7,19 +7,19 @@ MYHOME="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd -P)"
 DEPLOYMENT_DIR="${MYHOME}/src/deployments"
 
 # name of project in which we are working
-PROJECT=${PROJECT:-tutorial}
+PROJECT=${PROJECT:-istio-tutorial}
 
 oc new-project ${PROJECT} || exit 1
 oc adm policy add-scc-to-user privileged -z default -n ${PROJECT}
 
 # deploy customer
-oc create -f ${DEPLOYMENT_DIR}/customer.yaml
+oc create -n ${PROJECT} -f ${DEPLOYMENT_DIR}/customer.yaml
 
 # deploy preferences
-oc create -f ${DEPLOYMENT_DIR}/preference.yaml
+oc create -n ${PROJECT} -f ${DEPLOYMENT_DIR}/preference.yaml
 
 # deploy recommendation
-oc create -f ${DEPLOYMENT_DIR}/recommendation.yaml
+oc create -n ${PROJECT} -f ${DEPLOYMENT_DIR}/recommendation.yaml
 
 # deploy gateway
-oc create -f ${DEPLOYMENT_DIR}/gateway.yaml
+oc create -n ${PROJECT} -f ${DEPLOYMENT_DIR}/gateway.yaml
