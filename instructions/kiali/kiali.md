@@ -4,7 +4,7 @@ Applications deployed within the Service Mesh are able to take advantage of the 
 
 ## What we will learn in this module
 
-This module will provide a brief introduction to the kiali observability component within the Service Mesh control plane.
+This module will provide a brief introduction to the Kiali observability component within the Service Mesh control plane.
 
 ## Kiali
 
@@ -25,7 +25,7 @@ Before we take a look at the Kiali console lets first generate some load on the 
 
 ### Opening the Kiali console
 
-To open the kiali console enter the following command within a new terminal
+To open the Kiali console enter the following command within a new terminal
 
 `xdg-open https://$(oc get route -n istio-system kiali -o 'jsonpath={.spec.host}')`
 
@@ -76,9 +76,9 @@ Switch back to the terminal with the script we used to generate load and press t
 
 Kiali is a very useful tool for visualising the behaviour of your Service Mesh.  Through one UI you not only have a consistent view of your service interactions but you can see more detailed information about those invocations helping you to understand and identify potential issues which may arise.
 
-With an understanding of Kiali you should now be able to make use of its capabilities within the following modules to visualise the changes in behaviour we will make through the resources within the Service Mesh framework.  Please keep you Kiali UI open as you work through the following modules.
+With an understanding of Kiali you should now be able to make use of its capabilities within the following modules to visualise the changes in behaviour we will make through the resources within the Service Mesh framework.  Please keep your Kiali UI open as you work through the following modules.
 
-Kiali provides additional capabilties beyond what we have explored in this module, for more information refer to the [Kiali website](http://kiali.io).
+Kiali provides additional capabilities beyond what we have explored in this module, for more information refer to the [Kiali website](http://kiali.io).
 
 ## Next module
 
