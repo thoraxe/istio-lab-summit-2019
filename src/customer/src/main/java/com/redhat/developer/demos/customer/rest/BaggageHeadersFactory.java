@@ -15,6 +15,8 @@ public class BaggageHeadersFactory implements ClientHeadersFactory {
         MultivaluedHashMap<String, String> headers = new MultivaluedHashMap<>();
         String userAgent = incomingHeaders.getFirst("user-agent");
         headers.putSingle("baggage-user-agent", userAgent);
+        String userLocation = incomingHeaders.getFirst("user-location");
+        headers.putSingle("user-location", userLocation);
         return headers;
     }
 
