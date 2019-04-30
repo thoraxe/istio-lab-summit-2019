@@ -2,7 +2,7 @@ id: "istio"
 name: "Getting Hands On With Istio on OpenShift"
 
 content:
-  url: https://raw.githubusercontent.com/jamesfalkner/istio-lab-summit-2018/master
+  url: https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master
 
 vars:
   KUBEADMIN_PASSWORD: "default"
@@ -12,11 +12,7 @@ vars:
 modules:
   activate:
   - intro
-  - basic-routing
-  - graph-and-tracing
+  - kiali
+  - routing
   - fault-injection
   - rate-limiting
-  - timeouts
-  - whitelisting
-  - blacklisting
-  - extra-credit

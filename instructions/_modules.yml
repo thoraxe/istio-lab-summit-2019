@@ -1,19 +1,19 @@
 modules:
   intro:
     name: Introduction and Setup
-  basic-routing:
-    name: Basic Routing
-  graph-and-tracing:
-    name: Service Visualization and Tracing Console
+  kiali:
+    name: Observering the Service Mesh using Kiali
+  routing:
+    name: Routing within the Service Mesh
   fault-injection:
     name: Fault Injection
   rate-limiting:
-    name: Rate Limiting
-  timeouts:
-    name: Timeouts
-  whitelisting:
-    name: Whitelisting
-  blacklisting:
-    name: Blacklisting
-  extra-credit:
-    name: Extra Credit
+    name: Rate-Limiting/Policy
+#  timeouts:
+#    name: Timeouts
+#  whitelisting:
+#    name: Whitelisting
+#  blacklisting:
+#    name: Blacklisting
+#  extra-credit:
+#    name: Extra Credit
