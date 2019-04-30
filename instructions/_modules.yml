@@ -2,7 +2,7 @@ modules:
   intro:
     name: Introduction and Setup
   kiali:
-    name: Observering the Service Mesh using Kiali
+    name: Observing the Service Mesh using Kiali
   routing:
     name: Routing within the Service Mesh
   fault-injection:
