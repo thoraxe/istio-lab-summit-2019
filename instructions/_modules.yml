@@ -5,6 +5,8 @@ modules:
     name: Observing the Service Mesh using Kiali
   routing:
     name: Routing within the Service Mesh
+  mtls:
+    name: Enabling Mutual TLS
   fault-injection:
     name: Fault Injection
   rate-limiting:

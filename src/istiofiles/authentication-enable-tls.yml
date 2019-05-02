@@ -1,7 +1,11 @@
 apiVersion: "authentication.istio.io/v1alpha1"
 kind: "Policy"
 metadata:
-  name: "default"
+  name: "preference-mutualtls"
+  namespace: istio-tutorial
 spec:
+  targets:
+  - name: preference
   peers:
-  - mtls: {}
+  - mtls: 
+      mode: STRICT

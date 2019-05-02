@@ -14,5 +14,6 @@ modules:
   - intro
   - kiali
   - routing
+  - mtls
   - fault-injection
   - rate-limiting
