@@ -8,9 +8,11 @@ modules:
   fault-injection:
     name: Fault Injection
   rate-limiting:
-    name: Rate-Limiting/Policy
-#  timeouts:
-#    name: Timeouts
+    name: Rate Limiting/Policy
+  circuit-breaking:
+    name: Retries, Timeouts and Circuit Breaking
+  authentication:
+    name: Authentication (JWT and RBAC)
 #  whitelisting:
 #    name: Whitelisting
 #  blacklisting:

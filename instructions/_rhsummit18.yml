@@ -16,3 +16,5 @@ modules:
   - routing
   - fault-injection
   - rate-limiting
+  - circuit-breaking
+  - authentication
