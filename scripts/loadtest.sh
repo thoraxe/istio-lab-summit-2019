@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+
 function curl_gateway(){
   j=0
   while [ $j -lt 50 ]; do
