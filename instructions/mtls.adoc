@@ -1,0 +1,179 @@
+= Mutual TLS
+
+include::_attributes.adoc[]
+
+Apply Mutual TLS to services in the cluster. 
+
+:toc:
+
+== What we will learn in this module
+This module will provide instruction on how to enable Mutual TLS to secure communication
+ between services in the mesh.
+
+[IMPORTANT]
+.Before you start
+====
+
+You should only have the following virtualservices and destinationrules in the istio-tutorial namespace
+
+[source,bash]
+----
+oc -n istio-tutorial get destinationrule
+No resources found.
+
+oc -n istio-tutorial get virtualservices
+NAME       GATEWAYS             HOSTS     AGE
+customer   [customer-gateway]   [*]       4d2h
+----
+====
+
+[#enablemtls]
+== Enabling Mutual TLS
+For this example, we will take advantage of another pod that is outside of the service mesh. Let's grab that and the customer pod in a variable.
+
+[source,bash]
+----
+export CURL_POD=$(oc get pods -n istio-tutorial -l app=curl | grep curl | awk '{ print $1}' )
+export CUSTOMER_POD=$(oc get pods -n istio-tutorial -l app=customer | grep customer | awk '{ print $1}' )
+----
+
+Use curl to query the preference service from both of them and examine the results. 
+
+[source, bash]
+----
+oc exec $CURL_POD curl http://preference:8080
+...
+preference => recommendation v3 from '588747fd55-tksqh': 13685
+
+oc exec $CUSTOMER_POD -c customer curl http://preference:8080
+...
+preference => recommendation v1 from '7f8755bb79-6dzt4': 14056
+----
+
+Notice that both requests were successful. 
+
+Now configure preference to use mutual TLS policy. 
+
+[source,bash]
+----
+cat <<EOF | oc create -f -
+apiVersion: "authentication.istio.io/v1alpha1"
+kind: "Policy"
+metadata:
+  name: "preference-mutualtls"
+  namespace: istio-tutorial
+spec:
+  targets:
+  - name: preference
+  peers:
+  - mtls: 
+      mode: STRICT
+EOF
+----
+
+And try the curl again.
+
+[source, bash]
+----
+oc exec $CURL_POD curl http://preference:8080
+...
+curl: (56) Recv failure: Connection reset by peer
+command terminated with exit code 56
+
+
+oc exec $CUSTOMER_POD -c customer curl http://preference:8080
+...
+curl: (56) Recv failure: Connection reset by peer
+command terminated with exit code 56
+----
+
+This time, we can see that the curl failed with exit code 56. This is because
+ preference is now requiring encrypted communication over  mutual TLS, but neither customer nor curl are using it.
+
+Now create a destination rule to make communication to customer use mutual TLS and run the curl again.
+
+[source,bash]
+----
+cat <<EOF | oc create -f -
+apiVersion: "networking.istio.io/v1alpha3"
+kind: "DestinationRule"
+metadata:
+  name: "preference-destination-rule"
+spec:
+  host: "preference.istio-tutorial.svc.cluster.local"
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+EOF
+----
+
+
+[source, bash]
+----
+oc exec $CURL_POD curl http://preference:8080
+...
+curl: (56) Recv failure: Connection reset by peer
+command terminated with exit code 56
+
+oc exec $CUSTOMER_POD -c customer curl http://preference:8080
+...
+preference => recommendation v2 from '74f48f4cbc-qfcwp': 13702
+----
+
+This time, we can see that because customer is part of the mesh, the request is successful. Since preference isn't, that still fails. 
+
+
+[#mtlsmigration]
+== mTLS migration
+
+Mutual TLS in Istio provides the ability to migrate to mTLS gradually rather than forcing all services to migrate to mTLS at once. Lets try that now. 
+
+First, delete the policy we created above.
+
+[source,bash]
+----
+oc delete policy -n istio-tutorial preference-mutualtls
+----
+
+Now create a policy using permissive mode. 
+
+[source,bash]
+----
+cat <<EOF | oc create -f -
+apiVersion: "authentication.istio.io/v1alpha1"
+kind: "Policy"
+metadata:
+  name: "preference-mutualtls"
+  namespace: istio-tutorial
+spec:
+  targets:
+  - name: preference
+  peers:
+  - mtls: 
+      mode: PERMISSIVE
+EOF
+----
+
+If we try our curl commands again, we notice that this time they both pass. 
+
+[source, bash]
+----
+oc exec $CURL_POD curl http://preference:8080
+...
+preference => recommendation v3 from '588747fd55-tksqh': 13689
+
+oc exec $CUSTOMER_POD -c customer curl http://preference:8080
+...
+preference => recommendation v2 from '74f48f4cbc-qfcwp': 13704
+----
+
+[#cleanup]
+== Cleanup
+
+To cleanup, delete both the policy and destination rule that we created. 
+
+[source, bash]
+----
+oc delete policy -n istio-tutorial preference-mutualtls
+oc delete destinationrule -n istio-tutorial preference-destination-rule
+----
