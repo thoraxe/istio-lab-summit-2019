@@ -33,7 +33,7 @@ IMPORTANT: The Rate Limiting rules take some time to be applied and reflected. B
 Here we will limit the number of concurrent requests into recommendation v2
 
 Now apply the rate limiting. To see how this is done,
-take a look at link:http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/recommendation_rate_limit_handler.yml[recommendation_rate_limit_handler.yml]
+take a look at link:http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/recommendation_rate_limit.yml[recommendation_rate_limit.yml]
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -130,7 +130,7 @@ destination. Next, deploy the rate limiting resources.
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc -n istio-tutorial create -f http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/recommendation_rate_limit.yml
+$ oc create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/recommendation_rate_limit.yml
 destinationrule.networking.istio.io/recommendation created
 memquota.config.istio.io/handler created
 quota.config.istio.io/requestcount created
@@ -189,7 +189,7 @@ Note the rate limited failure rate from preference to recommendation
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc -n istio-tutorial delete -f http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/recommendation_rate_limit.yml
+oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/src/istiofiles/recommendation_rate_limit.yml
 destinationrule.networking.istio.io "recommendation" deleted
 memquota.config.istio.io "handler" deleted
 quota.config.istio.io "requestcount" deleted
@@ -199,5 +199,5 @@ rule.config.istio.io "quota" deleted
 ----
 
 == What we learned in this module
-Istio provides a simple mechanism to dynamically limit the traffic to a particular service or version of a service.
+ServiceMesh provides a simple mechanism to dynamically limit the traffic to a particular service or version of a service.
 Kiali provides a rich console to visualize the service failures due to traffic exceeding those limits.

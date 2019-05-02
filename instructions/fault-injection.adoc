@@ -28,7 +28,7 @@ customer   [customer-gateway]   [*]     18h
 [#503error]
 == HTTP Error 503
 
-By default, recommendation v1, v2 and v3 are being randomly load-balanced as that is the default behavior in Istio
+By default, recommendation v1, v2 and v3 are being randomly load-balanced as that is the default behavior in ServiceMesh
 
 [source,bash,subs="+macros,+attributes"]
 ----
@@ -110,7 +110,7 @@ accurately reflected in the Kiali console.
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc -n istio-tutorial create -f http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/virtual-service-recommendation-503.yml
+$ oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-503.yml
 destinationrule.networking.istio.io/recommendation created
 virtualservice.networking.istio.io/recommendation created
 
@@ -147,7 +147,7 @@ Note the 50% failure rate from preference to recommendation
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc -n istio-tutorial delete -f http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/virtual-service-recommendation-503.yml
+$ oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-503.yml
 destinationrule.networking.istio.io "recommendation" deleted
 virtualservice.networking.istio.io "recommendation" deleted
 ----
@@ -213,7 +213,7 @@ v1, v2, and v3 but also introduces a 7s delay for 50% of the requests.
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc -n istio-tutorial create -f http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/virtual-service-recommendation-delay.yml
+$ oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-delay.yml
 destinationrule.networking.istio.io/recommendation created
 virtualservice.networking.istio.io/recommendation created
 ----
@@ -256,12 +256,12 @@ Note that 50% of the traces are slightly over the artificial 7s delay while the 
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc -n istio-tutorial delete -f http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/virtual-service-recommendation-delay.yml
+$ oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-delay.yml
 destinationrule.networking.istio.io "recommendation" deleted
 virtualservice.networking.istio.io "recommendation" deleted
 ----
 
 == What we learned in this module
-Istio provides a simple mechanism to simulate service and network failures and delays to improve
+ServiceMesh provides a simple mechanism to simulate service and network failures and delays to improve
 microservice testing and resiliency. Kiali provides a rich console to
 visualize the service failure rates and service delays.
