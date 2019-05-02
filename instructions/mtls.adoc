@@ -105,6 +105,7 @@ spec:
     tls:
       mode: ISTIO_MUTUAL
 EOF
+----
 
 
 [source, bash]
@@ -134,6 +135,7 @@ oc delete policy -n istio-tutorial preference-mutualtls
 ----
 
 Now create a policy using permissive mode. 
+
 [source,bash]
 ----
 cat <<EOF | oc create -f -
