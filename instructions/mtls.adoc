@@ -125,6 +125,7 @@ This time, we can see that because customer is part of the mesh, the request is 
 
 [#mtlsmigration]
 == mTLS migration
+
 Mutual TLS in Istio provides the ability to migrate to mTLS gradually rather than forcing all services to migrate to mTLS at once. Lets try that now. 
 
 First, delete the policy we created above.
