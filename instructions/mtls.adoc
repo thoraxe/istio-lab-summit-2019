@@ -25,7 +25,9 @@ oc -n istio-tutorial get virtualservices
 NAME       GATEWAYS             HOSTS     AGE
 customer   [customer-gateway]   [*]       4d2h
 ----
+====
 
+[#enablemtls]
 == Enabling Mutual TLS
 For this example, we will take advantage of another pod that is outside of the service mesh. Let's grab that and the customer pod in a variable.
 
@@ -120,8 +122,9 @@ preference => recommendation v2 from '74f48f4cbc-qfcwp': 13702
 This time, we can see that because customer is part of the mesh, the request is successful. Since preference isn't, that still fails. 
 
 
+[#mtlsmigration]
 == mTLS migration
-Mutual TLS in Istio provides the ability to migrate to mTLS rather than forcing all services to migrate to mTLS at once. Lets try that now. 
+Mutual TLS in Istio provides the ability to migrate to mTLS gradually rather than forcing all services to migrate to mTLS at once. Lets try that now. 
 
 First, delete the policy we created above.
 
@@ -161,6 +164,7 @@ oc exec $CUSTOMER_POD -c customer curl http://preference:8080
 preference => recommendation v2 from '74f48f4cbc-qfcwp': 13704
 ----
 
+[#cleanup]
 == Cleanup
 
 To cleanup, delete both the policy and destination rule that we created. 
