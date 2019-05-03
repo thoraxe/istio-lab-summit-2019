@@ -244,7 +244,7 @@ Run this command to deploy the role and role binding:
 
 [source, bash,subs="+macros,+attributes"]
 ----
-$ oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/master/src/istiofiles/namespace-rbac-policy.yml
+$ oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/namespace-rbac-policy.yml
 servicerole.rbac.istio.io/service-viewer created
 servicerolebinding.rbac.istio.io/bind-service-viewer created
 ----
@@ -286,10 +286,10 @@ Note the 100% success rate due to allowed RBAC
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/namespace-rbac-policy.yml
+$ oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/namespace-rbac-policy.yml
 servicerole.rbac.istio.io "service-viewer" deleted
 servicerolebinding.rbac.istio.io "bind-service-viewer" deleted
-$ oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/authorization-enable-rbac.yml
+$ oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/authorization-enable-rbac.yml
 rbacconfig.rbac.istio.io "default" deleted
 ----
 

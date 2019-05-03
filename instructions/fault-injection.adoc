@@ -104,8 +104,8 @@ subsets for v1, v2, and v3. Second, a VirtualService `recommendation` that split
 v1, v2, and v3 but also introduces a 503 fault for 50% of the requests.
 
 NOTE: You may not see the 503 failures at 50% from the client due to the retry behavior in the lab
-environment. When the preference -> recommendation call fails it will be retried 3x. Thus there is
-a high probability that the client will not see a failure but you will see the failure rate is
+ServiceMesh environment. When the preference -> recommendation call fails it will be retried 3x. Thus there is
+a high probability that the client will not see a failure but you will see that the failure rate is
 accurately reflected in the Kiali console.
 
 [source,bash,subs="+macros,+attributes"]
