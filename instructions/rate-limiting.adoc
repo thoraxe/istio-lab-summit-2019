@@ -189,7 +189,7 @@ Note the rate limited failure rate from preference to recommendation
 
 [source,bash,subs="+macros,+attributes"]
 ----
-oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/recommendation_rate_limit.yml
+$ oc delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/recommendation_rate_limit.yml
 destinationrule.networking.istio.io "recommendation" deleted
 memquota.config.istio.io "handler" deleted
 quota.config.istio.io "requestcount" deleted

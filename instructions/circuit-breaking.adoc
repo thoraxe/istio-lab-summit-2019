@@ -315,7 +315,7 @@ customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 6375
 .Kiali Distributed Tracing for Base Fail Fast
 image:failfast.png[]
 
-Note all recommendation in in the ms range
+Note all recommendation hits are in the ms range
 
 [#nocircuitbreaker]
 === Load test without circuit breaker
@@ -418,6 +418,8 @@ destinationrule.networking.istio.io/recommendation configured
 image:circuit-graph.png[]
 
 You should see some some failures in the results. That's the circuit breaker being opened whenever ServiceMesh detects more than 1 pending request being handled by the instance/pod.
+
+=== Clean up
 
 Change the implementation of `v2` back to the image that responds without the delay of 3 seconds:
 
