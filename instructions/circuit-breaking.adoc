@@ -33,16 +33,9 @@ We will make pod recommendation-v2 fail 100% of the time. Get one of the pod nam
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc exec -it -n istio-tutorial $(oc get pods -n istio-tutorial | grep recommendation-v2 | awk '{ print $1 }' | head -1) -c recommendation /bin/bash
-----
+$ oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s localhost:8080/misbehave
 
-You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
-
-[source,bash,subs="+macros,+attributes"]
-----
-$ curl localhost:8080/misbehave
 Following requests to / will return a 503
-$ exit
 ----
 
 This is a special endpoint that will make our application return only `503`s.
@@ -75,24 +68,17 @@ Now, make the pod v2 behave well again:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc exec -it -n istio-tutorial $(oc get pods -n istio-tutorial | grep recommendation-v2 | awk '{ print $1 }' | head -1) -c recommendation /bin/bash
-----
+$ oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s localhost:8080/behave
 
-You will be inside the application container of your pod `recommendation-v2-2036617847-spdrb`. Now execute:
-
-[source,bash,subs="+macros,+attributes"]
-----
-$ curl localhost:8080/behave
 Following requests to / will return 200
-$ exit
 ----
 
 The application is back to random load-balancing between v1, v2 and v3
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5282
+$ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5282
+
 customer => preference => recommendation v2 from '74f48f4cbc-j7rfm': 5267
 customer => preference => recommendation v3 from '588747fd55-m8mj9': 5294
 customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5283
@@ -110,20 +96,9 @@ First, introduce some wait time in `recommendation v2` by making it a slow perfo
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/maistra_demos/recommendation:v2-timeout"}]}}}}' -n istio-tutorial
-deployment.extensions/recommendation-v2 patched
-----
+$ oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=3
 
-Wait until the recommendation v2 pod has been patched and is ready:
-[source,bash,subs="+macros,+attributes"]
-----
-$ oc -n istio-tutorial get pods
-NAME                                 READY     STATUS    RESTARTS   AGE
-customer-69b6b67bb7-sj25j            2/2       Running   0          5d9h
-preference-v1-76684856fd-j8bdg       2/2       Running   0          5d9h
-recommendation-v1-7f8755bb79-vjwq2   2/2       Running   0          5d9h
-recommendation-v2-c6844bf-xkx5d      2/2       Running   0          19s
-recommendation-v3-588747fd55-m8mj9   2/2       Running   0          5d9h
+Timeout has been set to 3 seconds
 ----
 
 Hit the customer endpoint a few times, to see the load-balancing between v1, v2 and v3 but with v2 taking a bit of time to respond
@@ -167,6 +142,7 @@ Note the 1s timeout for the recommendation destination.
 [source,bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial create -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-timeout.yml
+
 virtualservice.networking.istio.io/recommendation created
 ----
 
@@ -175,6 +151,7 @@ You will see it return v1 after waiting about 1 second. You don't see v2 anymore
 [source,bash,subs="+macros,+attributes"]
 ----
 $ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+
 customer => preference => recommendation v3 from '588747fd55-m8mj9': 5304
 customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5293
 customer => preference => recommendation v3 from '588747fd55-m8mj9': 5305
@@ -197,20 +174,9 @@ Change the implementation of `v2` back to the image that responds without the de
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/maistra_demos/recommendation:v2"}]}}}}' -n istio-tutorial
-deployment.extensions/recommendation-v2 patched
-----
+$ oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=0
 
-Wait until the recommendation v2 pod has been patched and is ready:
-[source,bash,subs="+macros,+attributes"]
-----
-$ oc -n istio-tutorial get pods
-NAME                                 READY     STATUS    RESTARTS   AGE
-customer-69b6b67bb7-sj25j            2/2       Running   0          5d9h
-preference-v1-76684856fd-j8bdg       2/2       Running   0          5d9h
-recommendation-v1-7f8755bb79-vjwq2   2/2       Running   0          5d9h
-recommendation-v2-c6844bf-xkx5d      2/2       Running   0          19s
-recommendation-v3-588747fd55-m8mj9   2/2       Running   0          5d9h
+Timeout has been set to 0 seconds
 ----
 
 Then delete the virtual service created for timeout by:
@@ -218,6 +184,7 @@ Then delete the virtual service created for timeout by:
 [source,bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial delete -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-timeout.yml
+
 virtualservice.networking.istio.io "recommendation" deleted
 ----
 
@@ -229,19 +196,6 @@ To see how this is done, take a look at link:http://github.com/thoraxe/istio-lab
 
 [source,bash,subs="+macros,+attributes"]
 ----
-apiVersion: networking.istio.io/v1alpha3
-kind: VirtualService
-metadata:
-  name: recommendation
-spec:
-  hosts:
-  - recommendation
-  http:
-  - route:
-    - destination:
-        host: recommendation
-    timeout: 1.000s
-[root@localhost istio-lab-summit-2019]# cat src/istiofiles/virtual-service-recommendation-split.yml
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
@@ -288,6 +242,7 @@ Note the weighting of the 3 recommendation destination versions.
 [source,bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial apply -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-split.yml
+
 destinationrule.networking.istio.io/recommendation created
 virtualservice.networking.istio.io/recommendation created
 ----
@@ -297,6 +252,7 @@ Let's perform a load test in our system:
 [source,bash,subs="+macros,+attributes"]
 ----
 $ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/loadtest.sh)
+
 customer => preference => recommendation v3 from '588747fd55-m8mj9': 6388
 customer => preference => recommendation v3 from '588747fd55-m8mj9': 6389
 customer => preference => recommendation v2 from '74f48f4cbc-bcntc': 334
@@ -324,20 +280,9 @@ Next, introduce some wait time in `recommendation v2` by making it a slow perfor
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/maistra_demos/recommendation:v2-timeout"}]}}}}' -n istio-tutorial
-deployment.extensions/recommendation-v2 patched
-----
+$ oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=3
 
-Wait until the recommendation v2 pod has been patched and is ready:
-[source,bash,subs="+macros,+attributes"]
-----
-$ oc -n istio-tutorial get pods
-NAME                                 READY     STATUS    RESTARTS   AGE
-customer-69b6b67bb7-sj25j            2/2       Running   0          5d9h
-preference-v1-76684856fd-j8bdg       2/2       Running   0          5d9h
-recommendation-v1-7f8755bb79-vjwq2   2/2       Running   0          5d9h
-recommendation-v2-c6844bf-xkx5d      2/2       Running   0          19s
-recommendation-v3-588747fd55-m8mj9   2/2       Running   0          5d9h
+Timeout has been set to 3 seconds
 ----
 
 Let's perform a load test in our system. We'll have 20 concurrent requests:
@@ -402,6 +347,7 @@ Note the connection pool with a max of 1 pending request and a traffic policy wh
 [source,bash,subs="+macros,+attributes"]
 ----
 $ oc apply -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml
+
 destinationrule.networking.istio.io/recommendation configured
 ----
 
@@ -409,7 +355,8 @@ Now let's see what is the behavior of the system running some load again:
 
 [source,bash,subs="+macros,+attributes"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/loadtest.sh)
+$ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/loadtest.sh)
+
 destinationrule.networking.istio.io/recommendation configured
 ----
 
@@ -425,20 +372,9 @@ Change the implementation of `v2` back to the image that responds without the de
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ oc patch deployment recommendation-v2 -p '{"spec":{"template":{"spec":{"containers":[{"name":"recommendation", "image":"quay.io/maistra_demos/recommendation:v2"}]}}}}' -n istio-tutorial
-deployment.extensions/recommendation-v2 patched
-----
+$ oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=0
 
-Wait until the recommendation v2 pod has been patched and is ready:
-[source,bash,subs="+macros,+attributes"]
-----
-$ oc -n istio-tutorial get pods
-NAME                                 READY     STATUS    RESTARTS   AGE
-customer-69b6b67bb7-sj25j            2/2       Running   0          5d9h
-preference-v1-76684856fd-j8bdg       2/2       Running   0          5d9h
-recommendation-v1-7f8755bb79-vjwq2   2/2       Running   0          5d9h
-recommendation-v2-c6844bf-xkx5d      2/2       Running   0          19s
-recommendation-v3-588747fd55-m8mj9   2/2       Running   0          5d9h
+Timeout has been set to 0 seconds
 ----
 
 Then delete the virtual service created for circuit braking by:
@@ -446,6 +382,7 @@ Then delete the virtual service created for circuit braking by:
 [source,bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial delete -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-split.yml
+
 virtualservice.networking.istio.io "recommendation" deleted
 ----
 
