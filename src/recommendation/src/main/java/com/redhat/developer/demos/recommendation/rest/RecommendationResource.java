@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 @Path("/")
@@ -32,6 +33,11 @@ public class RecommendationResource {
      */
     private boolean misbehave = false;
 
+    /**
+     * Timeout value for forcing timeout if > 0
+     */
+    private long timeout;
+
     private static final String HOSTNAME = parseContainerIdFromHostname(
             System.getenv().getOrDefault("HOSTNAME", "unknown"));
     private static final String VERSION = parseVersionFromHostname(
@@ -50,7 +56,9 @@ public class RecommendationResource {
         count++;
         logger.info(String.format("recommendation request from %s: %d", HOSTNAME, count));
 
-        // timeout();
+        if (timeout > 0) {
+            sleep(timeout);
+        }
 
         logger.debug("recommendation service ready to return");
         if (misbehave) {
@@ -60,9 +68,9 @@ public class RecommendationResource {
         // return Response.ok(String.format(RESPONSE_STRING_NOW_FORMAT, getNow(), HOSTNAME, count)).build();
     }
 
-    private void timeout() {
+    private void sleep(final long timeout) {
         try {
-            Thread.sleep(3000);
+            Thread.sleep(timeout);
         } catch (InterruptedException e) {
             logger.info("Thread interrupted");
         }
@@ -88,6 +96,14 @@ public class RecommendationResource {
         this.misbehave = false;
         logger.debug("'misbehave' has been set to 'false'");
         return Response.ok("Following requests to / will return 200\n").build();
+    }
+
+    @GET
+    @Path("/timeout")
+    public Response setTimeout(@QueryParam("timeout") int timeout) {
+        this.timeout = timeout*1000L;
+        logger.debug("'timeout' has been set to " + timeout + " seconds");
+        return Response.ok("Timeout has been set to " + timeout + " seconds\n").build();
     }
 
     private String getNow() {
