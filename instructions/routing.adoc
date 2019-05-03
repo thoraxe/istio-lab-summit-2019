@@ -51,7 +51,8 @@ Before we work through some of the routing scenarios we need to first generate l
 
 [source,bash]
 ----
-$ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+$ export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+$ while : ; do curl http://${INGRESS_GATEWAY}/ ; sleep 1 ; done
 ----
 
 We will leave this running for the remainder of this module.  Switch over to the Kiali Console and make sure you are seeing traffic split roughly _33%_ to each of the recommendation endpoints, if you do not see any change then press the _refresh_ button in the top right of the Kiali Console.
