@@ -22,7 +22,8 @@ Before we take a look at the Kiali console lets first generate some load on the 
 
 [source,bash]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+$ export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+$ while : ; do curl http://${INGRESS_GATEWAY}/ ; sleep 1 ; done
 ----
 
 === Opening the Kiali console
