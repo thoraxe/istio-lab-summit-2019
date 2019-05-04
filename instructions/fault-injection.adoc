@@ -16,9 +16,11 @@ You should have only the following virtualservices and destinationrules in the `
 [source, bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial get destinationrule
+
 No resources found.
 
 $ oc -n istio-tutorial get virtualservice
+
 NAME       GATEWAYS             HOSTS   AGE
 customer   [customer-gateway]   [*]     18h
 ----
@@ -33,12 +35,14 @@ By default, recommendation v1, v2 and v3 are being randomly load-balanced as tha
 [source,bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial get pods -l app=recommendation
+
 NAME                                 READY   STATUS    RESTARTS   AGE
 recommendation-v1-7fbb8f794-ngw58    2/2     Running   0          21h
 recommendation-v2-77bc7bb94d-8wjxz   2/2     Running   0          17h
 recommendation-v3-5786cd744d-96q79   2/2     Running   0          17h
 
 $ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+
 customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 26
 customer => preference => recommendation v2 from '74f48f4cbc-j7rfm': 27
 customer => preference => recommendation v3 from '588747fd55-m8mj9': 27
@@ -111,10 +115,12 @@ accurately reflected in the Kiali console.
 [source,bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-503.yml
+
 destinationrule.networking.istio.io/recommendation created
 virtualservice.networking.istio.io/recommendation created
 
 $ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+
 customer => preference => recommendation v2 from '74f48f4cbc-j7rfm': 76
 customer => Error: 503 - preference => Error: 503 - fault filter abort
 customer => preference => recommendation v3 from '588747fd55-m8mj9': 82
@@ -148,6 +154,7 @@ Note the 50% failure rate from preference to recommendation
 [source,bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-503.yml
+
 destinationrule.networking.istio.io "recommendation" deleted
 virtualservice.networking.istio.io "recommendation" deleted
 ----
@@ -214,6 +221,7 @@ v1, v2, and v3 but also introduces a 7s delay for 50% of the requests.
 [source,bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-delay.yml
+
 destinationrule.networking.istio.io/recommendation created
 virtualservice.networking.istio.io/recommendation created
 ----
@@ -231,6 +239,7 @@ If you are monitoring the logs for recommendation v1, v2 and v3, you will also s
 [source,bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial logs -f recommendation-v#-XXXXXXXXXXXX -c recommendation
+
 Apr 26, 2019 9:31:09 PM com.redhat.developer.demos.recommendation.rest.RecommendationResource getRecommendations
 INFO: recommendation request from 7fbb8f794-ngw58: 8334
 Apr 26, 2019 9:31:17 PM com.redhat.developer.demos.recommendation.rest.RecommendationResource getRecommendations
@@ -257,6 +266,7 @@ Note that 50% of the traces are slightly over the artificial 7s delay while the 
 [source,bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-delay.yml
+
 destinationrule.networking.istio.io "recommendation" deleted
 virtualservice.networking.istio.io "recommendation" deleted
 ----

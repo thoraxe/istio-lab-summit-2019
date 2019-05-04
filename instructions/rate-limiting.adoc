@@ -17,9 +17,11 @@ You should have only the following virtualservices and destinationrules in the `
 [source, bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial get destinationrule
+
 No resources found.
 
 $ oc -n istio-tutorial get virtualservice
+
 NAME       GATEWAYS             HOSTS   AGE
 customer   [customer-gateway]   [*]     18h
 ----
@@ -131,6 +133,7 @@ destination. Next, deploy the rate limiting resources.
 [source,bash,subs="+macros,+attributes"]
 ----
 $ oc create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/recommendation_rate_limit.yml
+
 destinationrule.networking.istio.io/recommendation created
 memquota.config.istio.io/handler created
 quota.config.istio.io/requestcount created
@@ -190,6 +193,7 @@ Note the rate limited failure rate from preference to recommendation
 [source,bash,subs="+macros,+attributes"]
 ----
 $ oc delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/recommendation_rate_limit.yml
+
 destinationrule.networking.istio.io "recommendation" deleted
 memquota.config.istio.io "handler" deleted
 quota.config.istio.io "requestcount" deleted

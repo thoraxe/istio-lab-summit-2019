@@ -18,9 +18,11 @@ You should have only the following virtualservices and destinationrules in the `
 [source, bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial get destinationrule
+
 No resources found.
 
 $ oc -n istio-tutorial get virtualservice
+
 NAME       GATEWAYS             HOSTS   AGE
 customer   [customer-gateway]   [*]     18h
 ----
@@ -36,6 +38,7 @@ The first thing you need to do is validate that it is possible to communicate be
 [source,bash,subs="+macros,+attributes"]
 ----
 $ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+
 customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 26
 customer => preference => recommendation v2 from '74f48f4cbc-j7rfm': 27
 customer => preference => recommendation v3 from '588747fd55-m8mj9': 27
@@ -70,6 +73,7 @@ And then run the following to deploy the policy:
 [source, bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/policy-jwt.yaml
+
 policy.authentication.istio.io/jwt-example created
 ----
 
@@ -78,6 +82,7 @@ Then let's run the curl again:
 [source,bash,subs="+macros,+attributes"]
 ----
 $ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+
 Origin authentication failed.
 ----
 
@@ -113,6 +118,7 @@ Then let's run the curl again, this time with the token.
 [source,bash,subs="+macros,+attributes"]
 ----
 $ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer_token.sh)
+
 customer => preference => recommendation v3 from '588747fd55-m8mj9': 27103
 customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 27140
 customer => preference => recommendation v2 from '74f48f4cbc-snwfm': 18439
@@ -145,6 +151,7 @@ Note the 100% failure rate from the authenticated end-user to customer
 [source, bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/policy-jwt.yaml
+
 policy.authentication.istio.io "jwt-example" deleted
 ----
 
@@ -173,6 +180,7 @@ Run this command to deploy the RBAC:
 [source, bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/authorization-enable-rbac.yml
+
 rbacconfig.rbac.istio.io/default created
 ----
 
@@ -183,6 +191,7 @@ Then let's run the curl to test the RBAC:
 [source,bash,subs="+macros,+attributes"]
 ----
 $ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+
 RBAC: access denied
 ----
 
@@ -245,6 +254,7 @@ Run this command to deploy the role and role binding:
 [source, bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/namespace-rbac-policy.yml
+
 servicerole.rbac.istio.io/service-viewer created
 servicerolebinding.rbac.istio.io/bind-service-viewer created
 ----
@@ -254,6 +264,7 @@ Let's send a request now:
 [source,bash,subs="+macros,+attributes"]
 ----
 $ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+
 customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 27224
 customer => preference => recommendation v2 from '74f48f4cbc-snwfm': 18522
 customer => preference => recommendation v3 from '588747fd55-m8mj9': 27187
@@ -287,9 +298,12 @@ Note the 100% success rate due to allowed RBAC
 [source,bash,subs="+macros,+attributes"]
 ----
 $ oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/namespace-rbac-policy.yml
+
 servicerole.rbac.istio.io "service-viewer" deleted
 servicerolebinding.rbac.istio.io "bind-service-viewer" deleted
+
 $ oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/authorization-enable-rbac.yml
+
 rbacconfig.rbac.istio.io "default" deleted
 ----
 
