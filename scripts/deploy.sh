@@ -23,3 +23,6 @@ oc create -n ${PROJECT} -f ${DEPLOYMENT_DIR}/recommendation.yaml
 
 # deploy gateway
 oc create -n ${PROJECT} -f ${DEPLOYMENT_DIR}/gateway.yaml
+
+# deploy curl
+oc create -n ${PROJECT} -f ${DEPLOYMENT_DIR}/curl.yaml
