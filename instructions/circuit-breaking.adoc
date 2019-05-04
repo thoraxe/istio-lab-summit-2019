@@ -77,8 +77,9 @@ The application is back to random load-balancing between v1, v2 and v3
 
 [source,bash,subs="+macros,+attributes"]
 ----
-$ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5282
+$ bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
 
+customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5282
 customer => preference => recommendation v2 from '74f48f4cbc-j7rfm': 5267
 customer => preference => recommendation v3 from '588747fd55-m8mj9': 5294
 customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5283
