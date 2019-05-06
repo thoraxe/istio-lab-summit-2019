@@ -1,7 +1,5 @@
 = Access Control Lists
 
-include::_attributes.adoc[]
-
 Access control lists set whitelists/blacklists to restrict communication. 
 
 :toc:
