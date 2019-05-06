@@ -93,7 +93,7 @@ spec:
   peers:
   - mtls: 
       mode: STRICT
----
+----
 
 And try the curl again.
 

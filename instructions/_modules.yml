@@ -7,17 +7,15 @@ modules:
     name: Routing within the Service Mesh
   mtls:
     name: Enabling Mutual TLS
-  fault-injection:
-    name: Fault Injection
-  rate-limiting:
-    name: Rate Limiting/Policy
-  circuit-breaking:
-    name: Retries, Timeouts and Circuit Breaking
   authentication:
     name: Authentication (JWT and RBAC)
-#  whitelisting:
-#    name: Whitelisting
-#  blacklisting:
-#    name: Blacklisting
+  acl:
+    name: Whitelisting/Blacklisting
+  circuit-breaking:
+    name: Retries, Timeouts and Circuit Breaking
+  rate-limiting:
+    name: Rate Limiting/Policy
+  fault-injection:
+    name: Fault Injection
 #  extra-credit:
 #    name: Extra Credit

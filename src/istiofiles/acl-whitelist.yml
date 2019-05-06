@@ -2,23 +2,26 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: listchecker
 metadata:
   name: preferencewhitelist
+  namespace: istio-tutorial
 spec:
-  overrides: ["recommendation"]
+  overrides: ["v1", "v3"]
   blacklist: false
 ---
 apiVersion: "config.istio.io/v1alpha2"
 kind: listentry
 metadata:
   name: preferencesource
+  namespace: istio-tutorial
 spec:
-  value: source.labels["app"]
+  value: destination.labels["version"]
 ---
 apiVersion: "config.istio.io/v1alpha2"
 kind: rule
 metadata:
-  name: checkfromcustomer
+  name: checktorecommendation
+  namespace: istio-tutorial
 spec:
-  match: destination.labels["app"] == "preference"
+  match: destination.labels["app"] == "recommendation"
   actions:
   - handler: preferencewhitelist.listchecker
     instances:
