@@ -4,7 +4,7 @@ metadata:
   name: preferencewhitelist
   namespace: istio-tutorial
 spec:
-  overrides: ["v1", "v2"]
+  overrides: ["v1", "v3"]
   blacklist: false
 ---
 apiVersion: "config.istio.io/v1alpha2"

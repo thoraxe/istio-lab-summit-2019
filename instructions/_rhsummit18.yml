@@ -15,7 +15,8 @@ modules:
   - kiali
   - routing
   - mtls
-  - fault-injection
-  - rate-limiting
-  - circuit-breaking
   - authentication
+  - acl
+  - circuit-breaking
+  - rate-limiting
+  - fault-injection
