@@ -2,6 +2,7 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: denier
 metadata:
   name: denycustomerhandler
+  namespace: istio-tutorial
 spec:
   status:
     code: 7
@@ -11,6 +12,7 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: checknothing
 metadata:
   name: denycustomerrequests
+  namespace: istio-tutorial
 spec:
 ---
 apiVersion: "config.istio.io/v1alpha2"
@@ -18,7 +20,7 @@ kind: rule
 metadata:
   name: denycustomer
 spec:
-  match: destination.labels["app"] == "preference" && source.labels["app"]=="customer"
+  match: source.labels["app"]=="preference" && destination.labels["app"] == "recommendation"  && destination.labels["version"] == "v3"
   actions:
   - handler: denycustomerhandler.denier
     instances: [ denycustomerrequests.checknothing ]
