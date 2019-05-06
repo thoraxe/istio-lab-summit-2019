@@ -9,33 +9,42 @@ This module will provide instruction on how to enable Mutual TLS to secure commu
  between services in the mesh.
 
 [IMPORTANT]
-.Before you start
+.Before Start
 ====
+You should have only the following virtualservices and destinationrules in
+the `istio-tutorial` namespace:
 
-You should only have the following virtual services and destination rules in the istio-tutorial namespace
-
-[source,bash]
+[source,bash,subs="+macros,+attributes",role="copypaste"]
 ----
 oc -n istio-tutorial get destinationrule
+oc -n istio-tutorial get virtualservice
+----
+
+And you should see something like the following:
+
+----
 No resources found.
 
-oc -n istio-tutorial get virtualservices
-NAME       GATEWAYS             HOSTS     AGE
-customer   [customer-gateway]   [*]       4d2h
+NAME       GATEWAYS             HOSTS   AGE
+customer   [customer-gateway]   [*]     18h
 ----
 ====
 
 [#enablemtls]
 == Enabling Mutual TLS
-For this example, we will take advantage of another pod that is outside of the service mesh. Let's grab that and the customer pod in a variable.
+For this example, we will take advantage of another pod that is outside of
+the service mesh. Let's grab that and the customer pod in a variable.
 
+Examine the traffic between the curl and customer services and the preference service:
 
-Examine the traffic between the curl and customer services and the preference service. 
-
-[source, bash]
+[source,bash,subs="+macros,+attributes",role="copypaste"]
 ----
 bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer_preference.sh)
+----
 
+You will see something like:
+
+----
 Executing curl in curl pod
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
@@ -59,7 +68,9 @@ Executing curl in curl pod
 
 _Kiali’s Graph_
 
-Within the Kiali UI select the Graph option from the left hand navigation and then choose
+Within the Kiali UI select the Graph option from the left hand navigation and
+then choose:
+
 * Namespace: istio-tutorial
 * Versioned app graph
 * Requests percentage
@@ -67,13 +78,14 @@ Within the Kiali UI select the Graph option from the left hand navigation and th
 * Every 10s
 * Security checked under display
 
-Notice that both requests were successful. In the Kiali graph, this can be seen from the green line.
+Notice that both requests were successful. In the Kiali graph, this can be
+seen from the green line.
 
 image::mtls_initial.png[]
 
 Now configure preference to use mutual TLS policy. 
 
-[source,bash]
+[source,bash,role="copypaste"]
 ----
 oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/authentication-enable-tls.yml
 ----
@@ -98,9 +110,14 @@ spec:
 And try the curl again.
 
 
-[source, bash]
+[source,bash,subs="+macros,+attributes",role="copypaste"]
 ----
 bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer_preference.sh)
+----
+
+And again:
+
+----
 
 Executing curl in curl pod
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -126,15 +143,17 @@ Executing curl in customer pod
 ----
 
 This time, we can see that the curl failed with exit code 56. This is because
- preference is now requiring encrypted communication over  mutual TLS, but neither customer nor curl are using it.
+preference is now requiring encrypted communication over mutual TLS, but
+neither customer nor curl are using it.
 
 We can see the same thing in Kiali. 
 
 image::mtls_no_destination_rule.png[]
 
-Now create a destination rule to make communication to customer use mutual TLS and run the curl again.
+Now create a destination rule to make communication to customer use mutual
+TLS and run the curl again.
 
-[source,bash]
+[source,bash,role="copypaste"]
 ----
 oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/destination-rule-tls.yml
 ----
@@ -154,9 +173,16 @@ spec:
       mode: ISTIO_MUTUAL
 ----
 
-[source, bash]
+Execute the curl script:
+
+[source,bash,subs="+macros,+attributes",role="copypaste"]
 ----
 bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer_preference.sh)
+----
+
+And again:
+
+----
 
 Executing curl in customer pod
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
@@ -188,32 +214,38 @@ Executing curl in customer pod
 100    62  100    62    0     0preference => recommendation v1 from '765d4bc49d-ddgg7': 117
 ----
 
-This time, we can see that because customer is part of the mesh, the request is successful. Since preference isn't, that still fails. 
+This time, we can see that because customer is part of the mesh, the request
+is successful. Since preference isn't, that still fails.
 
-Looking at the Kiali graph, a lock is now present for communicationbetween customer and preference, indicating that this communication is secured via mTLS.
+Looking at the Kiali graph, a lock is now present for communicationbetween
+customer and preference, indicating that this communication is secured via
+mTLS.
 
 image::mtls_policy_and_rule.png[]
 
 [#mtlsmigration]
 == mTLS migration
 
-Mutual TLS in OpenShift Service Mesh provides the ability to migrate to mTLS gradually rather than forcing all services to migrate to mTLS at once. Lets try that now. 
+Mutual TLS in OpenShift Service Mesh provides the ability to migrate to mTLS
+gradually rather than forcing all services to migrate to mTLS at once. Lets
+try that now.
 
 First, delete the policy we created above.
 
-[source,bash]
+[source,bash,role="copypaste"]
 ----
 oc delete policy -n istio-tutorial preference-mutualtls
 ----
 
 Now create a policy using permissive mode. 
 
-[source,bash]
+[source,bash,role="copypaste"]
 ----
 oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/policy-permissive-tls.yml
 ----
 
-The contents of the file are displayed below.
+The contents of the file are displayed below:
+
 [source,yaml]
 ----
 apiVersion: "authentication.istio.io/v1alpha1"
@@ -229,11 +261,16 @@ spec:
       mode: PERMISSIVE
 ----
 
-If we try our curl commands again, we notice that this time they both pass. 
+If we try our curl commands again, we notice that this time they both pass:
 
-[source, bash]
+[source,bash,subs="+macros,+attributes",role="copypaste"]
 ----
 bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer_preference.sh)
+----
+
+And again:
+
+----
 
 executing curl in curl pod
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current                                                                           
@@ -259,7 +296,9 @@ Executing curl in customer pod
   0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0preference => recommendation v2 from '7679d466f8-2hwcd': 130
 ----
 
-In Kiali, we can see that the lock is still shown, indicating the presence of mTLS. We see the curl pod labeled as unknown since it's not part of the mesh, and we can see that both customer and curl are succesful.
+In Kiali, we can see that the lock is still shown, indicating the presence of
+mTLS. We see the curl pod labeled as unknown since it's not part of the mesh,
+and we can see that both customer and curl are succesful.
 
 image::mtls_permissive.png[]
 
@@ -268,7 +307,7 @@ image::mtls_permissive.png[]
 
 To cleanup, delete both the policy and destination rule that we created. 
 
-[source, bash]
+[source,bash,role="copypaste"]
 ----
 oc delete policy -n istio-tutorial preference-mutualtls
 oc delete destinationrule -n istio-tutorial preference-destination-rule
