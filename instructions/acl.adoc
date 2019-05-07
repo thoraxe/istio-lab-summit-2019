@@ -50,7 +50,7 @@ customer => preference => recommendation v2 from '7679d466f8-2hwcd': 2950
 Now create the whitelist. 
 [source,bash]
 ----
-oc create -f http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/acl-whitelist.yml
+oc create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/acl-whitelist.yml
 ----
 
 To see how this is done, take a look at link:http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/acl-whitelist.yml :
@@ -97,7 +97,7 @@ image::whitelist_v2_fail.png[]
 
 [source, bash]
 ----
-oc delete -f http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/acl-whitelist.yml
+oc delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/acl-whitelist.yml
 ----
 
 [#blacklist]
@@ -123,7 +123,7 @@ Now, create the blacklist.
 
 [source, bash]
 ----
-oc create -f http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/acl-blacklist.yml
+oc create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/acl-blacklist.yml
 ----
 
 To see how this is done, take a look at link:http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/acl-blacklist.yml :
@@ -171,5 +171,5 @@ image::blacklist_v3_blocked.png[]
 
 [source, bash]
 ----
-oc delete -f http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/acl-blacklist.yml
+oc delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/acl-blacklist.yml
 ----
