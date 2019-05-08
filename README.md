@@ -1,7 +1,5 @@
-# Red Hat Summit 2018: 
-# Getting Hands On With Istio on OpenShift
-
-![Istio Logo](instructions/images/istio-logo.png)
+# Red Hat Summit 2019: 
+# Red Hat OpenShift Service Mesh in Action
 
 ## Purpose
 
@@ -30,72 +28,17 @@ your application. This proxy intercepts all network communication between your
 microservices microservices, and is configured and managed using Istio’s control
 plane functionality -- not your application code!
 
-### Fetch connect script
+Kiali is an observability console designed to provide operational insight
+into the behavior and performance of the service mesh as a whole.
 
-First, open a terminal and run the following commands:
+Jaeger is a utility for capturing distributed tracing information of requests
+as they travel throughout the mesh.
 
-~~~bash
-cd
-wget https://raw.githubusercontent.com/jamesfalkner/istio-lab-summit-2018/master/scripts/connect.sh
-~~~
+Prometheus and Grafana are used to capture metrics about the performance and
+behavior of the mesh.
 
-### Find your hostname
+These components combined together are the Red Hat OpenShift Service Mesh.
 
-In the browser, you had requested a lab environment. On that page, you were
-assigned a GUID (a 4-digit alphanumeric string). For example, `xxxx`.
-
-### Execute connect script
-
-To connect to your provisioned lab machine, run the following command:
-
-**MAKE SURE THAT YOU SUBSTITUTE `xxxx` FOR THE GUID THAT YOU WERE ASSIGNED**
-
-~~~bash
-cd
-bash connect.sh openshift-xxxx.rhpds.opentlc.com
-~~~
-
-Make sure you type _yes_ to complete the SSH connection.
-
-Once connected, your lab machine has several environment variables pre-defined,
-and has Istio added to your `$PATH`. You can confirm this is set correctly:
-
-~~~bash
-echo Istio Home: $ISTIO_HOME && \
-echo Istio Lab Content: $ISTIO_LAB_HOME && \
-echo Istio Lab Project Name: $ISTIO_LAB_PROJECT && \
-echo Path: $PATH
-~~~
-
-### Start OpenShift and install Istio
-All of the exercises in this lab will be performed as the `root` system user.
-First, escalate your privileges using the following `sudo` command: 
-
-**MAKE SURE THAT YOU EXECUTE THE SUDO COMMAND EXACTLY OR YOUR ENVIRONMENT
-VARIABLES WILL NOT PROPAGATE CORRECTLY**
-
-~~~bash
-sudo -E -i
-~~~
-
-Then, execute the following two commands which will start the local OpenShift
-environment and install Istio into it:
-
-~~~bash
-cd $ISTIO_LAB_HOME
-./scripts/start.sh
-~~~
-
-The start script will then output a URL for you to visit:
-
-~~~
---------------------
-Setup complete. Open the Lab Instructions in your browser: http://istio-workshop-guides.aa.bb.cc.dd.xip.io
---------------------
-~~~
-
-This is the URL for your customized lab guide that you will use for the rest of
-the lab. Please open that URL in your browser and continue from there.
 
 # Using this lab content elsewhere
 ## Deploy On OpenShift

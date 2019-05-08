@@ -1,16 +1,86 @@
 # TEB93D - Red Hat OpenShift Service Mesh in Action
-Thank you for signing up for an attending the lab on Red Hat OpenShift Service Mesh.
+
+## Purpose
+
+As microservices-based applications become more prevalent, both the number of
+and complexity of their interactions increases. Up until now much of the burden
+of managing these complex microservices interactions has been placed on the
+application developer, with different or non-existent support for microservice
+concepts depending on language and framework.
+
+The service mesh concept pushes this responsibility to the infrastructure, with
+features for traffic management, distributed tracing and observability, policy
+enforcement, and service/identity security, freeing the developer to focus on
+business value. In this hands-on session you will learn how to apply some of
+these features to a simple polyglot microservices application running on top of
+OpenShift using Istio, an open platform to connect, manage, and secure
+microservices.
+
+## Background
+
+Istio is an open platform to connect, manage, and secure microservices. Istio
+provides an easy way to create a network of deployed services with load
+balancing, service-to-service authentication, monitoring, and more, without
+requiring any changes in application code. OpenShift can automatically inject a
+special sidecar proxy throughout your environment to enable Istio management for
+your application. This proxy intercepts all network communication between your
+microservices microservices, and is configured and managed using Istio’s control
+plane functionality -- not your application code!
+
+Kiali is an observability console designed to provide operational insight
+into the behavior and performance of the service mesh as a whole.
+
+Jaeger is a utility for capturing distributed tracing information of requests
+as they travel throughout the mesh.
+
+Prometheus and Grafana are used to capture metrics about the performance and
+behavior of the mesh.
+
+These components combined together are the Red Hat OpenShift Service Mesh.
+
+## Conventions
+You will see various code and command blocks throughout these exercises. Some of
+the command blocks can be copy/pasted directly. Others will require modification
+of the command before execution. If you see a command block with a red border
+(see below), the command will require slight modification.
+
+[source,none,role="copypaste copypaste-warning"]
+----
+some command to modify
+----
+
+Most command blocks support auto highlighting with a click. If you hover over
+the command block above and left-click, it should automatically highlight all the
+text to make for easier copying.
 
 ## Getting Started
-The machine you are sitting at has the OpenShift CLI installed. Since the
-Service Mesh lab is running against OpenShift Container Platform 4, you will
-need to use `oc4` to interact with the API server.
+The machine you are sitting at has the OpenShift CLI installed. But these
+machines have OpenShift 3 and OpenShift 4 clients installed simultaneously as
+`oc3` and `oc4`, respectively. In order to make the commands work as
+described in these labs, please alias the `oc4` command in any terminals you
+open:
+
+[source,bash,role="copypaste"]
+----
+alias oc=oc4
+----
+
+You can verify it is working by simply typing:
+
+[source,bash,role="copypaste"]
+----
+oc version
+----
+
+The Service Mesh control plane is already deployed with several application
+components in an OpenShift Container Platform 4 environment. You will need to
+use `oc` to interact with the API server.
 
 You can login using the following command:
 
 [source,bash,role="copypaste"]
 ----
-oc4 login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }} {{ API_URL }}
+oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }} {{ API_URL }}
 ----
 
 The OpenShift Web Console is also available to you at the following URL:
@@ -26,5 +96,3 @@ You can login with:
 Username: kubeadmin
 Password: {{ KUBEADMIN_PASSWORD }}
 ----
-
-Now you are ready for the first lab. Click **Go To Next Module** to continue!

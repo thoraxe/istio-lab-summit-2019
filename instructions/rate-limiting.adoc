@@ -12,15 +12,19 @@ terms of requests per time period.
 [IMPORTANT]
 .Before Start
 ====
-You should have only the following virtualservices and destinationrules in the `istio-tutorial` namespace
+You should have only the following virtualservices and destinationrules in
+the `istio-tutorial` namespace:
 
-[source, bash,subs="+macros,+attributes"]
+[source,bash,subs="+macros,+attributes",role="copypaste"]
 ----
-$ oc -n istio-tutorial get destinationrule
+oc -n istio-tutorial get destinationrule
+oc -n istio-tutorial get virtualservice
+----
 
+And you should see something like the following:
+
+----
 No resources found.
-
-$ oc -n istio-tutorial get virtualservice
 
 NAME       GATEWAYS             HOSTS   AGE
 customer   [customer-gateway]   [*]     18h
@@ -37,7 +41,7 @@ Here we will limit the number of concurrent requests into recommendation v2
 Now apply the rate limiting. To see how this is done,
 take a look at link:http://github.com/thoraxe/istio-lab-summit-2019/blob/master/src/istiofiles/recommendation_rate_limit.yml[recommendation_rate_limit.yml]
 
-[source,bash,subs="+macros,+attributes"]
+[source,yaml,subs="+macros,+attributes"]
 ----
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
@@ -127,13 +131,18 @@ spec:
     - requestcount.quota
 ----
 
-Note that the memquota resource `handler` defaines a rate limit of 4 requests per 5 seconds for the `recommendation`
-destination. Next, deploy the rate limiting resources.
+Note that the memquota resource `handler` defaines a rate limit of 4 requests
+per 5 seconds for the `recommendation` destination. Next, deploy the rate
+limiting resources.
 
-[source,bash,subs="+macros,+attributes"]
+[source,bash,subs="+macros,+attributes",role="copypaste"]
 ----
-$ oc create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/recommendation_rate_limit.yml
+oc create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/recommendation_rate_limit.yml
+----
 
+You will see something like:
+
+----
 destinationrule.networking.istio.io/recommendation created
 memquota.config.istio.io/handler created
 quota.config.istio.io/requestcount created
@@ -144,14 +153,13 @@ rule.config.istio.io/quota created
 
 Throw some requests at customer:
 
-[source, bash,subs="+macros,+attributes"]
+[source, bash,subs="+macros,+attributes",role="copypaste"]
 ----
 bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
 ----
 
 You should see some 429 errors indicating the quota has been exhausted.
 
-[source,bash,subs="+macros,+attributes"]
 ----
 customer => preference => recommendation v2 from '74f48f4cbc-j7rfm': 2944
 customer => preference => recommendation v3 from '588747fd55-m8mj9': 2962
@@ -174,7 +182,8 @@ customer => Error: 503 - preference => Error: 429 - RESOURCE_EXHAUSTED:Quota is 
 
 === Kiali's Graph
 
-Within the Kiali UI select the *Graph* option from the left hand navigation and then choose
+Within the Kiali UI select the *Graph* option from the left hand navigation
+and then choose
 
 * Namespace: istio-tutorial
 * Versioned app graph
@@ -186,14 +195,18 @@ Within the Kiali UI select the *Graph* option from the left hand navigation and 
 .Kiali Graph Showing Rate Limited Failures
 image::rate.png[]
 
-Note the rate limited failure rate from preference to recommendation
+Note the rate limited failure rate from preference to recommendation.
 
 === Clean up
 
-[source,bash,subs="+macros,+attributes"]
+[source,bash,subs="+macros,+attributes",role="copypaste"]
 ----
-$ oc delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/recommendation_rate_limit.yml
+oc delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/recommendation_rate_limit.yml
+----
 
+You will see something like:
+
+----
 destinationrule.networking.istio.io "recommendation" deleted
 memquota.config.istio.io "handler" deleted
 quota.config.istio.io "requestcount" deleted
@@ -203,5 +216,6 @@ rule.config.istio.io "quota" deleted
 ----
 
 == What we learned in this module
-ServiceMesh provides a simple mechanism to dynamically limit the traffic to a particular service or version of a service.
-Kiali provides a rich console to visualize the service failures due to traffic exceeding those limits.
+ServiceMesh provides a simple mechanism to dynamically limit the traffic to a
+particular service or version of a service. Kiali provides a rich console to
+visualize the service failures due to traffic exceeding those limits.
