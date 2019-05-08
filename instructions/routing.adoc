@@ -376,7 +376,7 @@ the v1 nor v3 endpoints.
 
 Now switch to the terminal watching the v3 console and notice the v3 endpoint
 is receiving a request every second, this request is a mirror of the traffic
-being sent to v1.
+being sent to v2.
 
 Finally switch to the Kiali console and notice all the traffic in the _Graph_
 tab has shifted across to the v2 endpoint. Kiali shows only the normal
