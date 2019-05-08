@@ -1,5 +1,6 @@
 #!/bin/sh
 
+alias oc=oc4
 export CURL_POD=$(oc get pods -n istio-tutorial -l app=curl | grep curl | awk '{ print $1}' )
 export CUSTOMER_POD=$(oc get pods -n istio-tutorial -l app=customer | grep customer | awk '{ print $1}' )
 
