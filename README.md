@@ -39,61 +39,113 @@ behavior of the mesh.
 
 These components combined together are the Red Hat OpenShift Service Mesh.
 
-
 # Using this lab content elsewhere
-## Deploy On OpenShift
+While this lab content was designed against the environment provided at the
+Red Hat Summit, the content can be used and deployed in virtually any
+OpenShift environment. It does, however, assume an OpenShift 4 environment.
 
-You can deploy the lab guides as a container image anywhere but most
-conveniently, you can deploy it on OpenShift Online or other OpenShift flavours:
+## Deploy the Lab Guide
+You can deploy the lab guide as a container image. There are two steps.
+First, you need to gather information about your environment. Then, you can
+launch the lab guide using that information.
 
+### Gathering Environment Information
+Deploying the lab guide will take two steps. First, you will need to get
+information about your cluster. Second, you will deploy the lab guide using
+the information you found so that proper URLs and references are
+automatically displayed in the guide.
+
+### Required Information
+Most of the information can be found in the output of the installer.
+
+1. Export the API URL endpoint to an environment variable:
+
+    ```bash
+    export API_URL=https://api......:6443
+    ```
+
+2. Export the master/console URL to an environment variable:
+
+    ```bash
+    export MASTER_URL=https://console-openshift-console.....
+    ```
+
+3. Export the `kubeadmin` password as an environment variable:
+
+    ```bash
+    export KUBEADMIN_PASSWORD=xxx
+    ```
+
+    If you don't have the `kubeadmin` password but you do have a user that has access to the OpenShift 4 cluster, just be sure to log in with that user instead of `kubeadmin` where instructed in the lab guide.
+
+4. Export the routing subdomain as an environment variable. When you
+  installed your cluster you specified a domain to use, and OpenShift built a
+  routing subdomain that looks like `apps.clusterID.domain`. For example,
+  `apps.mycluster.company.com`. Export this:
+
+    ```bash
+    export ROUTE_SUBDOMAIN=apps.mycluster.company.com
+    ```
+
+5. This lab guide was built for an internal Red Hat system, so there are two
+  additional things you will need to export. Please export them exactly as
+  follows:
+
+    ```bash
+    export GUID=xxxx
+    export BASTION_FQDN=foo.bar.com
+    ```
+
+### Deploy the Lab Guide
+Now that you have exported the various required variables, you can deploy the
+lab guide into your cluster. The following assumes you are logged in already
+as `kubeadmin` and on a system with the `oc` client installed:
+
+```bash
+oc new-project labguide
+oc new-app -n labguide --name istio \
+quay.io/osevg/workshopper -e CONTENT_URL_PREFIX="https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/instructions/" \
+-e WORKSHOPS_URLS="https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/instructions/_rhsummit18.yml" \
+-e API_URL=$API_URL \
+-e MASTER_URL=$MASTER_URL \
+-e KUBEADMIN_PASSWORD=$KUBEADMIN_PASSWORD \
+-e BASTION_FQDN=$BASTION_FQDN \
+-e GUID=$GUID \
+-e ROUTE_SUBDOMAIN=$ROUTE_SUBDOMAIN
+oc expose service istio
 ```
-oc new-project guides
-oc new-app osevg/workshopper --name=istio-workshop \
-      -e CONTENT_URL_PREFIX=https://raw.githubusercontent.com/jamesfalkner/istio-lab-summit-2018/master/instructions
-      -e WORKSHOPS_URLS="https://raw.githubusercontent.com/jamesfalkner/istio-lab-summit-2018/master/instructions/_rhsummit18.yml" \
-      -e JAVA_APP=false \
-      -e OPENSHIFT_MASTER="http://127.0.0.1:8443" \
-      -e APPS_SUFFIX="apps.127.0.0.1.nip.io" \
-      -e ISTIO_LAB_HOSTNAME="127.0.0.1"
 
-oc expose svc/istio-workshop
+## Deploying the App
+In the `/src/deployments` folder of this repository are several YAML files. You will want to create a project called `istio-tutorial` and then `create` all of these YAML files. For example:
+
+```bash
+oc new-project istio-tutorial
+oc create -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/deployments/curl.yaml
+oc create -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/deployments/customer.yaml
+oc create -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/deployments/gateway.yaml
+oc create -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/deployments/preference.yaml
+oc create -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/deployments/recommendation.yaml
 ```
 
-Replace `OPENSHIFT_MASTER` with the URL to the console of your working OpenShift
-environment (e.g.  `http://128.0.0.1:8443`), `APPS_SUFFIX` with your default
-routing suffix (e.g.  `apps.127.0.0.1.nip.io`), and `ISTIO_LAB_HOSTNAME` with
-the public hostname of your machine. These variables are used to subsitute
-values in the markdown content files.
+## Doing the Labs
+Your lab guide should deploy in a few moments. To find its url, execute:
 
-The guides can then be accessed at `http://istio-workshop-guides.$APPS_SUFFIX`.
-
-The lab content (`.md` files) will be pulled from the GitHub when users access the guides in
-their browser.
-
-Note that the workshop variables can be overriden via specifying environment
-variables on the container itself e.g. the `JAVA_APP` env var in the above
-command
-
-## Test Locally with Docker
-
-You can directly run Workshopper as a docker container which is specially helpful when writing the content.
-```
-docker run -p 8080:8080 -v $(pwd):/app-data \
-              -e CONTENT_URL_PREFIX="file:///app-data/instructions" \
-              -e WORKSHOPS_URLS="file:///app-data/instructions/_rhsummit18.yml" \
-              -e OPENSHIFT_MASTER="foo" \
-              -e APPS_SUFFIX="$MY_IP.xip.io" \
-              -e ISTIO_LAB_HOSTNAME="MY_HOSTNAME" \
-              osevg/workshopper:latest
+```bash
+oc get route admin -n labguide
 ```
 
-Replace `OPENSHIFT_MASTER` with the URL to the console of your working OpenShift
-environment (e.g.  `http://128.0.0.1:8443`), `APPS_SUFFIX` with your default
-routing suffix (e.g.  `apps.127.0.0.1.nip.io`), and `ISTIO_LAB_HOSTNAME` with
-the public hostname of your machine. These variables are used to subsitute
-values in the markdown content files.
+You should be able to visit that URL and see the lab guide. From here you can
+follow the instructions in the lab guide.
 
-Go to `http://localhost:8080` on your browser to see the rendered workshop
-content. You can modify the lab instructions and refresh the page to see the
-latest changes.
+## Notes and Warnings
+Remember, this experience is designed for a provisioning system internal to
+Red Hat. Your lab guide will be mostly accurate, but slightly off.
 
+* You aren't likely using `lab-user`
+* You will probably not need to actively use your `GUID`
+* You will see lots of output that references your `GUID` or other slightly off
+  things
+* Your `MachineSets` are different depending on the EC2 region you chose
+
+But, generally, everything should work. Just don't be alarmed if something
+looks mostly different than the lab guide.
