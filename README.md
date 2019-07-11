@@ -102,17 +102,19 @@ lab guide into your cluster. The following assumes you are logged in already
 as `kubeadmin` and on a system with the `oc` client installed:
 
 ```bash
-oc new-project labguide
-oc new-app -n labguide --name istio \
-quay.io/osevg/workshopper -e CONTENT_URL_PREFIX="https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/instructions/" \
--e WORKSHOPS_URLS="https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/instructions/_rhsummit18.yml" \
--e API_URL=$API_URL \
--e MASTER_URL=$MASTER_URL \
--e KUBEADMIN_PASSWORD=$KUBEADMIN_PASSWORD \
--e BASTION_FQDN=$BASTION_FQDN \
--e GUID=$GUID \
--e ROUTE_SUBDOMAIN=$ROUTE_SUBDOMAIN
-oc expose service istio
+oc new-app https://raw.githubusercontent.com/openshift-labs/workshop-dashboard/3.4.1/templates/production.json -n labguide \
+      --param APPLICATION_NAME=istio \
+      --param TERMINAL_IMAGE=quay.io/openshiftlabs/workshop-dashboard:3.4.1 \
+      --param GATEWAY_ENVVARS="TERMINAL_TAB=split" \
+      --param DOWNLOAD_URL=https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/instructions/ \
+      --param WORKSHOP_FILE=_rhsummit18.yml \
+      --param WORKSHOP_ENVVARS=" \
+API_URL=$API_URL \
+MASTER_URL=$MASTER_URL \
+KUBEADMIN_PASSWORD=$KUBEADMIN_PASSWORD \
+BASTION_FQDN=$BASTION_FQDN \
+GUID=$GUID \
+ROUTE_SUBDOMAIN=$ROUTE_SUBDOMAIN"
 ```
 
 ## Deploying the App
@@ -149,3 +151,8 @@ Red Hat. Your lab guide will be mostly accurate, but slightly off.
 
 But, generally, everything should work. Just don't be alarmed if something
 looks mostly different than the lab guide.
+
+## Removing Application
+```bash
+oc delete all,serviceaccounts,rolebindings,configmaps -l app=istio -n labguide
+```

@@ -15,7 +15,7 @@ circuit breaking. This module will also how to visualize these capabilities in K
 You should have only the following virtualservices and destinationrules in
 the `istio-tutorial` namespace:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial get destinationrule
 oc -n istio-tutorial get virtualservice
@@ -39,7 +39,7 @@ times. We will make pod recommendation-v2 fail 100% of the time. Get one of
 the pod names from your system and replace on the following command
 accordingly:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s localhost:8080/misbehave
 ----
@@ -55,9 +55,9 @@ This is a special endpoint that will make our application return only `503`s.
 You will see it works every time because ServiceMesh will retry the
 recommendation service *automatically* and it will land on v1 or v3 only.
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
 ----
  
 You will see something like:
@@ -86,7 +86,7 @@ Note that recommendation v2 has no traffic logged, but the the client has a
 
 Now, make the pod v2 behave well again:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s localhost:8080/behave
 ----
@@ -99,9 +99,9 @@ Following requests to / will return 200
 
 The application is back to random load-balancing between v1, v2 and v3.
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
 ----
 
 And again:
@@ -126,7 +126,7 @@ failing.
 First, introduce some wait time in `recommendation v2` by making it a slow
 performer with a 3 second delay by running the command
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=3
 ----
@@ -140,9 +140,9 @@ Timeout has been set to 3 seconds
 Hit the customer endpoint a few times, to see the load-balancing between v1,
 v2 and v3 but with v2 taking a bit of time to respond
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
 ----
 
 [#img-timeout-v1]
@@ -176,7 +176,7 @@ spec:
 
 Note the 1s timeout for the recommendation destination.
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial create -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-timeout.yml
 ----
@@ -191,9 +191,9 @@ You will see it return v1 after waiting about 1 second. You don't see v2
 anymore, because the response from v2 expires after the timeout period and it
 is never returned.
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
 ----
 
 And then:
@@ -221,7 +221,7 @@ rule.
 Change the implementation of `v2` back to the image that responds without the
 delay of 3 seconds:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=0
 ----
@@ -234,7 +234,7 @@ Timeout has been set to 0 seconds
 
 Then delete the virtual service created for timeout by:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial delete -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-timeout.yml
 ----
@@ -297,7 +297,7 @@ spec:
 
 Note the weighting of the 3 recommendation destination versions.
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial apply -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-split.yml
 ----
@@ -311,9 +311,9 @@ virtualservice.networking.istio.io/recommendation created
 
 Let's perform a load test in our system:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/loadtest.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/loadtest.sh)
 ----
 
 You will see something like:
@@ -345,7 +345,7 @@ Note all recommendation hits are in the ms range
 Next, introduce some wait time in `recommendation v2` by making it a slow
 performer with a 3 second delay by running the command:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=3
 ----
@@ -358,9 +358,9 @@ Timeout has been set to 3 seconds
 
 Let's perform a load test in our system. We'll have 20 concurrent requests:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/loadtest.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/loadtest.sh)
 ----
 
 [#img-nocicuitgraph]
@@ -419,7 +419,7 @@ spec:
 Note the connection pool with a max of 1 pending request and a traffic policy
 where 100% of single consecutive errors fail.
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc apply -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml
 ----
@@ -432,9 +432,9 @@ destinationrule.networking.istio.io/recommendation configured
 
 Now let's see what is the behavior of the system running some load again:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/loadtest.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/loadtest.sh)
 ----
 
 You will see something like:
@@ -456,7 +456,7 @@ handled by the instance/pod.
 Change the implementation of `v2` back to the image that responds without the
 delay of 3 seconds:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=0
 ----
@@ -469,7 +469,7 @@ Timeout has been set to 0 seconds
 
 Then delete the virtual service created for circuit braking by:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial delete -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-split.yml
 ----

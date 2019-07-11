@@ -21,7 +21,7 @@ through this module.
 We also need to check the current Service Mesh configuration is as expected.
 To check the configuration run the following command
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc get istio-io -n istio-tutorial
 ----
@@ -71,7 +71,7 @@ Before we work through some of the routing scenarios we need to first
 generate load on the services. From within a terminal enter the following
 command
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute-2"]
 ----
 export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
 while : ; do curl http://${INGRESS_GATEWAY}/ ; sleep 1 ; done
@@ -151,9 +151,8 @@ spec:
 To deploy this configuration into the Service Mesh, open a new terminal and
 execute the following command:
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
-alias oc=oc4
 oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }} {{ API_URL }}
 oc create -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-weighted.yaml
 ----
@@ -176,7 +175,7 @@ Switch to the terminal and execute the following command:
 This will open the default system editor which is likely Vi/M. If you prefer
 to use a different editor, make sure you do something like:
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 export EDITOR=nano
 ----
@@ -185,7 +184,7 @@ Or substitute whatever installed editor you like.
 ====
 
 //TODO change to oc patch or similar
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc edit VirtualService recommendation -n istio-tutorial
 ----
@@ -200,7 +199,7 @@ service.
 
 Switch to the terminal and execute the following command
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc delete -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-weighted.yaml
 ----
@@ -258,7 +257,7 @@ spec:
 To deploy this configuration into the Service Mesh switch to a terminal and
 execute the following command:
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc create -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-canary.yaml
 ----
@@ -276,7 +275,7 @@ office.
 
 Switch to a terminal and execute the following commands:
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
 curl -H "user-location: Boston" http://${INGRESS_GATEWAY}/
@@ -290,7 +289,7 @@ the v1 endpoint.
 
 Switch to the terminal and execute the following command:
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc delete -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-canary.yaml
 ----
@@ -349,9 +348,8 @@ load script and notice the responses are coming from all three endpoints for
 the recommendation service. Now switch to another terminal and execute the
 following command to watch the console of the v3 endpoint:
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
-alias oc=oc4
 oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }} {{ API_URL }}
 oc logs -n istio-tutorial -c recommendation -f $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v3' -o jsonpath='{..metadata.name}')
 ----
@@ -365,7 +363,7 @@ both scripts running while we walk through this example.
 To deploy this configuration into the Service Mesh switch to a terminal and
 execute the following command:
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc create -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-mirroring.yaml
 ----
@@ -391,7 +389,7 @@ keys to terminate the script.
 
 From within the same terminal execute the following command:
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc delete -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-mirroring.yaml
 ----

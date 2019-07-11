@@ -54,20 +54,11 @@ the command block above and left-click, it should automatically highlight all th
 text to make for easier copying.
 
 ## Getting Started
-The machine you are sitting at has the OpenShift CLI installed. But these
-machines have OpenShift 3 and OpenShift 4 clients installed simultaneously as
-`oc3` and `oc4`, respectively. In order to make the commands work as
-described in these labs, please alias the `oc4` command in any terminals you
-open:
-
-[source,bash,role="copypaste"]
-----
-alias oc=oc4
-----
+The machine you are sitting at has the OpenShift CLI installed. OpenShift 4 client is installed as `oc`.
 
 You can verify it is working by simply typing:
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc version
 ----
@@ -78,7 +69,7 @@ use `oc` to interact with the API server.
 
 You can login using the following command:
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }} {{ API_URL }}
 ----

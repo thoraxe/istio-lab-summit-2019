@@ -11,7 +11,7 @@ We will also see how to use the Service Mesh authorization feature to provide ac
 You should have only the following virtualservices and destinationrules in
 the `istio-tutorial` namespace:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial get destinationrule
 oc -n istio-tutorial get virtualservice
@@ -35,9 +35,9 @@ Now it is time to enable end-user authentication.
 The first thing you need to do is validate that it is possible to communicate
 between all services without authentication.
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
 ----
 
 With output like the following:
@@ -76,7 +76,7 @@ spec:
 
 And then run the following to deploy the policy:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/policy-jwt.yaml
 ----
@@ -89,9 +89,9 @@ policy.authentication.istio.io/jwt-example created
 
 Then let's run the curl again:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
 ----
 
 And you will see something like:
@@ -124,7 +124,7 @@ To get a correct token, we need to pass the token in the http request. To see
 how this is done, take a look at
 link:http://github.com/thoraxe/istio-lab-summit-2019/blob/master/scripts/curl_customer_token.sh[curl_customer_token.sh]
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
 TOKEN=$(curl https://raw.githubusercontent.com/istio/istio/release-1.1/security/tools/jwt/samples/demo.jwt -s)
@@ -133,9 +133,9 @@ while :; do curl --header "Authorization: Bearer $TOKEN" $INGRESS_GATEWAY -s ; d
 
 Then let's run the curl again, this time with the token.
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer_token.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_token.sh)
 ----
 
 And you will see something like:
@@ -171,7 +171,7 @@ Note the 100% failure rate from the authenticated end-user to customer
 [#cleanup]
 === Clean Up
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/policy-jwt.yaml
 ----
@@ -205,7 +205,7 @@ spec:
 
 Run this command to deploy the RBAC:
 
-[source, bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/authorization-enable-rbac.yml
 ----
@@ -220,9 +220,9 @@ Now RBAC is enabled on your mesh.
 
 Then let's run the curl to test the RBAC:
 
-[source, bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
 ----
 
 You will see something like:
@@ -295,7 +295,7 @@ services.
 
 Run this command to deploy the role and role binding:
 
-[source, bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/namespace-rbac-policy.yml
 ----
@@ -309,9 +309,9 @@ servicerolebinding.rbac.istio.io/bind-service-viewer created
 
 Let's send a request now:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
 ----
 
 You will see something like:
@@ -348,7 +348,7 @@ Note the 100% success rate due to allowed RBAC.
 [#cleanup]
 == Clean Up
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/namespace-rbac-policy.yml
 oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/authorization-enable-rbac.yml

@@ -17,7 +17,7 @@ delays to better understand, test, and design microservices.
 You should have only the following virtualservices and destinationrules in
 the `istio-tutorial` namespace:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial get destinationrule
 oc -n istio-tutorial get virtualservice
@@ -39,7 +39,7 @@ customer   [customer-gateway]   [*]     18h
 By default, recommendation v1, v2 and v3 are being randomly load-balanced as
 that is the default behavior in Service Mesh.
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial get pods -l app=recommendation
 ----
@@ -55,9 +55,9 @@ recommendation-v3-5786cd744d-96q79   2/2     Running   0          17h
 
 Then, execute:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
 ----
 
 You will see something like:
@@ -137,7 +137,7 @@ probability that the client will not see a failure but you will see that the
 failure rate is accurately reflected in the Kiali console.
 ====
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-503.yml
 ----
@@ -151,9 +151,9 @@ virtualservice.networking.istio.io/recommendation created
 
 Then, execute:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
 ----
 
 You will see something like:
@@ -190,7 +190,7 @@ Note the 50% failure rate from preference to recommendation.
 
 === Clean up
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-503.yml
 ----
@@ -264,7 +264,7 @@ Note that this file creates 2 resources. First, a DestinationRule
 introduces a 7s delay for 50% of the requests.
 
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-delay.yml
 ----
@@ -278,9 +278,9 @@ virtualservice.networking.istio.io/recommendation created
 
 And hit the customer endpoint:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
 ----
 
 You will notice many requests to the customer endpoint now have a delay. If
@@ -326,7 +326,7 @@ the other 50% are in the low ms range.
 
 === Clean up
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-delay.yml
 ----
