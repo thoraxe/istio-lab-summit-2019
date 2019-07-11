@@ -33,27 +33,26 @@ service invocation. Kiali uses this information to provide a visualisation of
 the Service Mesh behaviour. The information includes metrics as well as
 distributed tracing information.
 
+=== Opening the Kiali console
+
+To open the Kiali console get the link from the following command. Open it in a new tab.
+[source,bash,role="execute"]
+----
+echo $(oc get route -n istio-system kiali -o 'jsonpath={.spec.host}')
+----
+
+When prompted to login use the username *admin* and the password *admin*. Come back here to generate load before we continue.
+
 === Generating load
 
 Before we take a look at the Kiali console lets first generate some load on
-the Service Mesh. From within a new terminal enter the following commands
+the Service Mesh. Let's execute the following in terminal 2 (the lower terminal)
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute-2"]
 ----
 export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
 while : ; do curl http://${INGRESS_GATEWAY}/ ; sleep 1 ; done
 ----
-
-=== Opening the Kiali console
-
-To open the Kiali console enter the following command within a new terminal
-
-[source,bash]
-----
-xdg-open https://$(oc get route -n istio-system kiali -o 'jsonpath={.spec.host}')
-----
-
-When prompted to login use the username *admin* and the password *admin*.
 
 === Kiali's Graph
 
@@ -106,7 +105,7 @@ image:kiali-tracing-4.png[Kiali Tracing showing context inforamation]
 
 === Cleaning up
 
-Switch back to the terminal with the script we used to generate load and
+Switch back to the terminal 2 with the script we used to generate load and
 press the ctrl+c keys to terminate the script.
 
 == What we learned in this module

@@ -1,2 +1,2 @@
-export INGRESS_GATEWAY=$(oc4 get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
 while :; do curl http://${INGRESS_GATEWAY} ; done

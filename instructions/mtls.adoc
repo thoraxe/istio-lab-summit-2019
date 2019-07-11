@@ -14,7 +14,7 @@ This module will provide instruction on how to enable Mutual TLS to secure commu
 You should have only the following virtualservices and destinationrules in
 the `istio-tutorial` namespace:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial get destinationrule
 oc -n istio-tutorial get virtualservice
@@ -37,9 +37,9 @@ the service mesh. Let's grab that and the customer pod in a variable.
 
 Examine the traffic between the curl and customer services and the preference service:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer_preference.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_preference.sh)
 ----
 
 You will see something like:
@@ -85,7 +85,7 @@ image::mtls_initial.png[]
 
 Now configure preference to use mutual TLS policy. 
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/authentication-enable-tls.yml
 ----
@@ -110,9 +110,9 @@ spec:
 And try the curl again.
 
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer_preference.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_preference.sh)
 ----
 
 And again:
@@ -153,7 +153,7 @@ image::mtls_no_destination_rule.png[]
 Now create a destination rule to make communication to customer use mutual
 TLS and run the curl again.
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/destination-rule-tls.yml
 ----
@@ -175,9 +175,9 @@ spec:
 
 Execute the curl script:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer_preference.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_preference.sh)
 ----
 
 And again:
@@ -232,14 +232,14 @@ try that now.
 
 First, delete the policy we created above.
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc delete policy -n istio-tutorial preference-mutualtls
 ----
 
 Now create a policy using permissive mode. 
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/policy-permissive-tls.yml
 ----
@@ -263,9 +263,9 @@ spec:
 
 If we try our curl commands again, we notice that this time they both pass:
 
-[source,bash,subs="+macros,+attributes",role="copypaste"]
+[source,bash,role="execute"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/scripts/curl_customer_preference.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_preference.sh)
 ----
 
 And again:
@@ -307,7 +307,7 @@ image::mtls_permissive.png[]
 
 To cleanup, delete both the policy and destination rule that we created. 
 
-[source,bash,role="copypaste"]
+[source,bash,role="execute"]
 ----
 oc delete policy -n istio-tutorial preference-mutualtls
 oc delete destinationrule -n istio-tutorial preference-destination-rule
