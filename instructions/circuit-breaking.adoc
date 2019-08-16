@@ -15,7 +15,7 @@ circuit breaking. This module will also how to visualize these capabilities in K
 You should have only the following virtualservices and destinationrules in
 the `istio-tutorial` namespace:
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc -n istio-tutorial get destinationrule
 oc -n istio-tutorial get virtualservice
@@ -39,7 +39,7 @@ times. We will make pod recommendation-v2 fail 100% of the time. Get one of
 the pod names from your system and replace on the following command
 accordingly:
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s localhost:8080/misbehave
 ----
@@ -55,21 +55,11 @@ This is a special endpoint that will make our application return only `503`s.
 You will see it works every time because ServiceMesh will retry the
 recommendation service *automatically* and it will land on v1 or v3 only.
 
-[source,bash,role="execute"]
-----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
-----
- 
-You will see something like:
+Run the workload script and continue to Kiali Graph section
 
+[source,bash,role="execute-2"]
 ----
-customer => preference => recommendation v3 from '588747fd55-m8mj9': 5290
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5279
-customer => preference => recommendation v3 from '588747fd55-m8mj9': 5291
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5280
-customer => preference => recommendation v3 from '588747fd55-m8mj9': 5292
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5281
-customer => preference => recommendation v3 from '588747fd55-m8mj9': 5293
+bash <(curl -s https://raw.githubusercontent.com/kaovilai/istio-lab-summit-2019/homeroom/scripts/curl_customer_quiet.sh)
 ----
 
 === Kiali's Graph
@@ -86,7 +76,7 @@ Note that recommendation v2 has no traffic logged, but the the client has a
 
 Now, make the pod v2 behave well again:
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s localhost:8080/behave
 ----
@@ -99,24 +89,6 @@ Following requests to / will return 200
 
 The application is back to random load-balancing between v1, v2 and v3.
 
-[source,bash,role="execute"]
-----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
-----
-
-And again:
-
-----
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5282
-customer => preference => recommendation v2 from '74f48f4cbc-j7rfm': 5267
-customer => preference => recommendation v3 from '588747fd55-m8mj9': 5294
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5283
-customer => preference => recommendation v2 from '74f48f4cbc-j7rfm': 5268
-customer => preference => recommendation v3 from '588747fd55-m8mj9': 5295
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5284
-customer => preference => recommendation v2 from '74f48f4cbc-j7rfm': 5269
-----
-
 [#timeout]
 == Timeout
 
@@ -126,7 +98,7 @@ failing.
 First, introduce some wait time in `recommendation v2` by making it a slow
 performer with a 3 second delay by running the command
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=3
 ----
@@ -137,13 +109,16 @@ You will see something like:
 Timeout has been set to 3 seconds
 ----
 
-Hit the customer endpoint a few times, to see the load-balancing between v1,
+Keep the load script running. 
+
+In Kiali Graph, switch to viewing Response time 
+
+See the load-balancing between v1,
 v2 and v3 but with v2 taking a bit of time to respond
 
-[source,bash,role="execute"]
-----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
-----
+[#img-]
+.Kiali Graph Showing slow v2 endpoint response time
+image:circuit-breaking-graph-slowv2.png[]
 
 [#img-timeout-v1]
 .Kiali Distributed Tracing for Recommendation v1
@@ -176,7 +151,9 @@ spec:
 
 Note the 1s timeout for the recommendation destination.
 
-[source,bash,role="execute"]
+We will now execute create this object.
+
+[source,bash,role="execute-1"]
 ----
 oc -n istio-tutorial create -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-timeout.yml
 ----
@@ -191,24 +168,6 @@ You will see it return v1 after waiting about 1 second. You don't see v2
 anymore, because the response from v2 expires after the timeout period and it
 is never returned.
 
-[source,bash,role="execute"]
-----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
-----
-
-And then:
-
-----
-customer => preference => recommendation v3 from '588747fd55-m8mj9': 5304
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5293
-customer => preference => recommendation v3 from '588747fd55-m8mj9': 5305
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5294
-customer => preference => recommendation v3 from '588747fd55-m8mj9': 5306
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5295
-customer => preference => recommendation v3 from '588747fd55-m8mj9': 5307
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 5296
-----
-
 [#img-timeout]
 .Kiali Graph for Timeout Rule
 image:timeout.png[]
@@ -221,7 +180,7 @@ rule.
 Change the implementation of `v2` back to the image that responds without the
 delay of 3 seconds:
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=0
 ----
@@ -234,7 +193,7 @@ Timeout has been set to 0 seconds
 
 Then delete the virtual service created for timeout by:
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc -n istio-tutorial delete -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-timeout.yml
 ----
@@ -297,7 +256,7 @@ spec:
 
 Note the weighting of the 3 recommendation destination versions.
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc -n istio-tutorial apply -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-split.yml
 ----
@@ -309,29 +268,7 @@ destinationrule.networking.istio.io/recommendation created
 virtualservice.networking.istio.io/recommendation created
 ----
 
-Let's perform a load test in our system:
-
-[source,bash,role="execute"]
-----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/loadtest.sh)
-----
-
-You will see something like:
-
-----
-customer => preference => recommendation v3 from '588747fd55-m8mj9': 6388
-customer => preference => recommendation v3 from '588747fd55-m8mj9': 6389
-customer => preference => recommendation v2 from '74f48f4cbc-bcntc': 334
-customer => preference => recommendation v2 from '74f48f4cbc-bcntc': 335
-customer => preference => recommendation v3 from '588747fd55-m8mj9': 6390
-customer => preference => recommendation v3 from '588747fd55-m8mj9': 6391
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 6372
-customer => preference => recommendation v2 from '74f48f4cbc-bcntc': 336
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 6373
-customer => preference => recommendation v2 from '74f48f4cbc-bcntc': 337
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 6374
-customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 6375
-----
+Now go to Kiali Distributed tracing to look at our load's response times.
 
 [#img-failfast]
 .Kiali Distributed Tracing for Base Fail Fast
@@ -345,7 +282,7 @@ Note all recommendation hits are in the ms range
 Next, introduce some wait time in `recommendation v2` by making it a slow
 performer with a 3 second delay by running the command:
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=3
 ----
@@ -358,9 +295,9 @@ Timeout has been set to 3 seconds
 
 Let's perform a load test in our system. We'll have 20 concurrent requests:
 
-[source,bash,role="execute"]
+[source,bash,role="execute-2"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/loadtest.sh)
+bash <(curl -s https://raw.githubusercontent.com/kaovilai/istio-lab-summit-2019/homeroom-dev/scripts/loadtest_quiet.sh)
 ----
 
 [#img-nocicuitgraph]
@@ -419,7 +356,7 @@ spec:
 Note the connection pool with a max of 1 pending request and a traffic policy
 where 100% of single consecutive errors fail.
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc apply -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml
 ----
@@ -432,9 +369,9 @@ destinationrule.networking.istio.io/recommendation configured
 
 Now let's see what is the behavior of the system running some load again:
 
-[source,bash,role="execute"]
+[source,bash,role="execute-2"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/loadtest.sh)
+bash <(curl -s https://raw.githubusercontent.com/kaovilai/istio-lab-summit-2019/homeroom-dev/scripts/loadtest_quiet.sh)
 ----
 
 You will see something like:
@@ -456,7 +393,7 @@ handled by the instance/pod.
 Change the implementation of `v2` back to the image that responds without the
 delay of 3 seconds:
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=0
 ----
@@ -469,7 +406,7 @@ Timeout has been set to 0 seconds
 
 Then delete the virtual service created for circuit braking by:
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc -n istio-tutorial delete -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-split.yml
 ----

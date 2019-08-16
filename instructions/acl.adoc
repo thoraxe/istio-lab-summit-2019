@@ -14,7 +14,7 @@ which control what services a service is able to access.
 You should have only the following virtualservices and destinationrules in
 the `istio-tutorial` namespace:
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc -n istio-tutorial get destinationrule
 oc -n istio-tutorial get virtualservice
@@ -44,9 +44,17 @@ code.
 
 First, start generating traffic. 
 
-[source,bash,role="execute"]
+[source,bash,role="execute-2"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
+bash <(curl -s https://raw.githubusercontent.com/kaovilai/istio-lab-summit-2019/homeroom/scripts/curl_customer_quiet.sh)
+----
+
+You can also run command below a couple times to see what the output from the shell script above is like
+
+[source,bash,role="execute-1"]
+----
+export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+curl http://${INGRESS_GATEWAY}
 ----
 
 You will see something like:
@@ -58,7 +66,7 @@ customer => preference => recommendation v2 from '7679d466f8-2hwcd': 2950
 
 Now create the whitelist. 
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/acl-whitelist.yml
 ----
@@ -107,7 +115,7 @@ image::whitelist_v2_fail.png[]
 [#whitelist-cleanup]
 == Cleanup
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/acl-whitelist.yml
 ----
@@ -119,11 +127,19 @@ deny traffic to the listed hosts. We'll demonstrate this using a blacklist on
 version 3 of the recomemendation service. Any requests to v3 will a 403
 Forbidden HTTP error code.
 
-First, start generating traffic. 
+If you have stopped previous load script, start it again. 
 
-[source,bash,role="execute"]
+[source,bash,role="execute-2"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
+bash <(curl -s https://raw.githubusercontent.com/kaovilai/istio-lab-summit-2019/homeroom/scripts/curl_customer_quiet.sh)
+----
+
+Run below once or twice to see actual output
+
+[source,bash,role="execute-1"]
+----
+export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+curl http://${INGRESS_GATEWAY}
 ----
 
 You will see something like:
@@ -137,7 +153,7 @@ customer => preference => recommendation v1 from '765d4bc49d-ddgg7': 2954
 
 Now, create the blacklist.
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/acl-blacklist.yml
 ----
@@ -184,7 +200,7 @@ image::blacklist_v3_blocked.png[]
 [#blacklist-cleanup]
 == Cleanup
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/acl-blacklist.yml
 ----

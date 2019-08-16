@@ -102,9 +102,9 @@ lab guide into your cluster. The following assumes you are logged in already
 as `kubeadmin` and on a system with the `oc` client installed:
 
 ```bash
-oc new-app https://raw.githubusercontent.com/openshift-labs/workshop-dashboard/3.4.1/templates/production.json -n labguide \
+oc new-app https://raw.githubusercontent.com/openshift-labs/workshop-dashboard/3.7.1/templates/production.json -n labguide \
       --param APPLICATION_NAME=istio \
-      --param TERMINAL_IMAGE=quay.io/openshiftlabs/workshop-dashboard:3.4.1 \
+      --param TERMINAL_IMAGE=quay.io/openshiftlabs/workshop-dashboard:3.7.1 \
       --param GATEWAY_ENVVARS="TERMINAL_TAB=split" \
       --param DOWNLOAD_URL=https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/instructions/ \
       --param WORKSHOP_FILE=_rhsummit18.yml \
