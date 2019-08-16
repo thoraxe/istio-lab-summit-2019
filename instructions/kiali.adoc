@@ -35,10 +35,10 @@ distributed tracing information.
 
 === Opening the Kiali console
 
-To open the Kiali console get the link from the following command. Open it in a new tab.
-[source,bash,role="execute"]
+To open the Kiali console get the link from the following command. Open it in a new tab. Make sure to use HTTPS to access.
+[source,bash,role="execute-1"]
 ----
-echo $(oc get route -n istio-system kiali -o 'jsonpath={.spec.host}')
+echo https://$(oc get route -n istio-system kiali -o 'jsonpath={.spec.host}')
 ----
 
 When prompted to login use the username *admin* and the password *admin*. Come back here to generate load before we continue.
@@ -50,8 +50,7 @@ the Service Mesh. Let's execute the following in terminal 2 (the lower terminal)
 
 [source,bash,role="execute-2"]
 ----
-export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
-while : ; do curl http://${INGRESS_GATEWAY}/ ; sleep 1 ; done
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_quiet.sh)
 ----
 
 === Kiali's Graph

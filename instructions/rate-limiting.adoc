@@ -15,7 +15,7 @@ terms of requests per time period.
 You should have only the following virtualservices and destinationrules in
 the `istio-tutorial` namespace:
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc -n istio-tutorial get destinationrule
 oc -n istio-tutorial get virtualservice
@@ -135,7 +135,7 @@ Note that the memquota resource `handler` defaines a rate limit of 4 requests
 per 5 seconds for the `recommendation` destination. Next, deploy the rate
 limiting resources.
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/recommendation_rate_limit.yml
 ----
@@ -153,9 +153,9 @@ rule.config.istio.io/quota created
 
 Throw some requests at customer:
 
-[source,bash,role="execute"]
+[source,bash,role="execute-2"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_quiet.sh)
 ----
 
 You should see some 429 errors indicating the quota has been exhausted.
@@ -199,7 +199,7 @@ Note the rate limited failure rate from preference to recommendation.
 
 === Clean up
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/recommendation_rate_limit.yml
 ----

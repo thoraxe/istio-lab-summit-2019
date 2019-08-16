@@ -40,7 +40,7 @@ These components combined together are the Red Hat OpenShift Service Mesh.
 
 ## Conventions
 You will see various code and command blocks throughout these exercises. Some of
-the command blocks can be copy/pasted directly. Others will require modification
+the command blocks can be executed directly while others will require modification,
 of the command before execution. If you see a command block with a red border
 (see below), the command will require slight modification.
 
@@ -49,16 +49,40 @@ of the command before execution. If you see a command block with a red border
 some command to modify
 ----
 
-Most command blocks support auto highlighting with a click. If you hover over
-the command block above and left-click, it should automatically highlight all the
-text to make for easier copying.
+If you hover over the command block above and left-click, it should automatically highlight all the text to make for easier copying.
+
+Most command blocks support executing with a click.
+
+Command blocks with looping scripts should be executed in the lower terminal like below
+
+[source,bash,role="execute-2"]
+----
+for i in 1 2 3; do echo "hello $i"; done
+----
+
+If the loop continues for ever, you will have to click the lower terminal and press Ctrl+C to terminate the program.
+
+[source,bash,role="execute-2"]
+----
+echo "A load generating script is running in the next step. Ctrl+C to stop"
+while :;do echo "this won't print" &> /dev/null ; done
+----
+
+For ordinary commands, we will be using the upper terminal
+
+[source,bash,role="execute-1"]
+----
+echo "Hello World"
+----
+
+
 
 ## Getting Started
 The machine you are sitting at has the OpenShift CLI installed. OpenShift 4 client is installed as `oc`.
 
 You can verify it is working by simply typing:
 
-[source,bash,role="execute"]
+[source,bash,role="execute-1"]
 ----
 oc version
 ----
@@ -67,23 +91,20 @@ The Service Mesh control plane is already deployed with several application
 components in an OpenShift Container Platform 4 environment. You will need to
 use `oc` to interact with the API server.
 
-You can login using the following command:
+The account you will be interacting with throughout the following exercises is a `ServiceAccount` with _cluster-admin_ `ClusterRole` binded to it to gives you privileges to access the resources on the cluster for this lab.
 
-[source,bash,role="execute"]
-----
-oc login -u kubeadmin -p {{ KUBEADMIN_PASSWORD }} {{ API_URL }}
-----
+Have a look at your user account name
 
-The OpenShift Web Console is also available to you at the following URL:
-
-[source,role="copypaste"]
+[source,bash,role="execute-1"]
 ----
-{{ MASTER_URL }}
+oc whoami
 ----
 
-You can login with:
+Verify that you can create projects
 
+[source,bash,role="execute-1"]
 ----
-Username: kubeadmin
-Password: {{ KUBEADMIN_PASSWORD }}
+oc auth can-i create project
 ----
+
+You can access the console by clicking on word *Console* on the toolbar above your terminal.
