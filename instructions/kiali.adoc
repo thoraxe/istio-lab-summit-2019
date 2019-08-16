@@ -50,7 +50,7 @@ the Service Mesh. Let's execute the following in terminal 2 (the lower terminal)
 
 [source,bash,role="execute-2"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/kaovilai/istio-lab-summit-2019/homeroom/scripts/curl_customer_quiet.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_quiet.sh)
 ----
 
 === Kiali's Graph

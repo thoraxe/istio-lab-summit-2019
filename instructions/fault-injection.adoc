@@ -57,7 +57,7 @@ Then, execute:
 
 [source,bash,role="execute-2"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/kaovilai/istio-lab-summit-2019/homeroom/scripts/curl_customer_quiet.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_quiet.sh)
 ----
 
 You can inject 503's, for approximately 50% of the requests. To see how this is done,

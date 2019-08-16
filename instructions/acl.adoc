@@ -46,7 +46,7 @@ First, start generating traffic.
 
 [source,bash,role="execute-2"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/kaovilai/istio-lab-summit-2019/homeroom/scripts/curl_customer_quiet.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_quiet.sh)
 ----
 
 You can also run command below a couple times to see what the output from the shell script above is like
@@ -131,7 +131,7 @@ If you have stopped previous load script, start it again.
 
 [source,bash,role="execute-2"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/kaovilai/istio-lab-summit-2019/homeroom/scripts/curl_customer_quiet.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_quiet.sh)
 ----
 
 Run below once or twice to see actual output

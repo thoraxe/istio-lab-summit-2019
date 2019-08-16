@@ -39,7 +39,7 @@ Examine the traffic between the curl and customer services and the preference se
 
 [source,bash,role="execute-2"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/kaovilai/istio-lab-summit-2019/homeroom/scripts/curl_customer_preference_quiet.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_preference_quiet.sh)
 ----
 
 Try running the load once in the upper terminal
@@ -99,7 +99,7 @@ And try the curl again.
 
 [source,bash,role="execute-2"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/kaovilai/istio-lab-summit-2019/homeroom/scripts/curl_customer_preference_quiet.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_preference_quiet.sh)
 ----
 
 Try running the load once in the upper terminal
@@ -149,7 +149,7 @@ Execute the curl script:
 
 [source,bash,role="execute-2"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/kaovilai/istio-lab-summit-2019/homeroom/scripts/curl_customer_preference_quiet.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_preference_quiet.sh)
 ----
 
 Try running the load once in the upper terminal
@@ -218,7 +218,7 @@ If we try our curl commands again, we notice that this time they both pass:
 
 [source,bash,role="execute-2"]
 ----
-bash <(curl -s https://raw.githubusercontent.com/kaovilai/istio-lab-summit-2019/homeroom/scripts/curl_customer_preference_quiet.sh)
+bash <(curl -s https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/dev/scripts/curl_customer_preference_quiet.sh)
 ----
 
 Try running the load once in the upper terminal
