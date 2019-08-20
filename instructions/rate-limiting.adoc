@@ -13,12 +13,12 @@ terms of requests per time period.
 .Before Start
 ====
 You should have only the following virtualservices and destinationrules in
-the `istio-tutorial` namespace:
+the `smcp-{{ OCP_USERNAME }}` namespace:
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial get destinationrule
-oc -n istio-tutorial get virtualservice
+oc -n smcp-{{ OCP_USERNAME }} get destinationrule
+oc -n smcp-{{ OCP_USERNAME }} get virtualservice
 ----
 
 And you should see something like the following:
@@ -47,7 +47,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
   name: recommendation
-  namespace: istio-tutorial
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
   host: recommendation
   subsets:
@@ -65,10 +65,10 @@ apiVersion: config.istio.io/v1alpha2
 kind: memquota
 metadata:
   name: handler
-  namespace: istio-system
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
   quotas:
-  - name: requestcount.quota.istio-system
+  - name: requestcount.quota.smcp-{{ OCP_USERNAME }}
     maxAmount: 500
     validDuration: 1s
     # The first matching override is applied.
@@ -85,7 +85,7 @@ apiVersion: config.istio.io/v1alpha2
 kind: quota
 metadata:
   name: requestcount
-  namespace: istio-system
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
   dimensions:
     source: request.headers["x-forwarded-for"] | "unknown"
@@ -96,7 +96,7 @@ apiVersion: config.istio.io/v1alpha2
 kind: QuotaSpec
 metadata:
   name: request-count
-  namespace: istio-system
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
   rules:
   - quotas:
@@ -107,21 +107,21 @@ apiVersion: config.istio.io/v1alpha2
 kind: QuotaSpecBinding
 metadata:
   name: request-count
-  namespace: istio-system
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
   quotaSpecs:
   - name: request-count
-    namespace: istio-system
+    namespace: smcp-{{ OCP_USERNAME }}
   services:
   - name: recommendation
-    namespace: istio-tutorial
+    namespace: smcp-{{ OCP_USERNAME }}
     #  - service: '*'  # Uncomment this to bind *all* services to request-count
 ---
 apiVersion: config.istio.io/v1alpha2
 kind: rule
 metadata:
   name: quota
-  namespace: istio-system
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
   # quota only applies if you are not logged in.
   # match: match(request.headers["cookie"], "user=*") == false
@@ -185,7 +185,7 @@ customer => Error: 503 - preference => Error: 429 - RESOURCE_EXHAUSTED:Quota is 
 Within the Kiali UI select the *Graph* option from the left hand navigation
 and then choose
 
-* Namespace: istio-tutorial
+* Namespace: smcp-{{ OCP_USERNAME }}
 * Versioned app graph
 * Requests percentage
 * Last 1m

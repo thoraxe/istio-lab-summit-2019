@@ -12,12 +12,12 @@ This module will provide instruction on how to enable Mutual TLS to secure commu
 .Before Start
 ====
 You should have only the following virtualservices and destinationrules in
-the `istio-tutorial` namespace:
+the `smcp-{{ OCP_USERNAME }}` namespace:
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial get destinationrule
-oc -n istio-tutorial get virtualservice
+oc -n smcp-{{ OCP_USERNAME }} get destinationrule
+oc -n smcp-{{ OCP_USERNAME }} get virtualservice
 ----
 
 And you should see something like the following:
@@ -46,12 +46,12 @@ Try running the load once in the upper terminal
 
 [source,bash,role="execute-1"]
 ----
-export CURL_POD=$(oc get pods -n istio-tutorial -l app=curl | grep curl | awk '{ print $1}' )
-export CUSTOMER_POD=$(oc get pods -n istio-tutorial -l app=customer | grep customer | awk '{ print $1}' )
+export CURL_POD=$(oc get pods -n smcp-{{ OCP_USERNAME }} -l app=curl | grep curl | awk '{ print $1}' )
+export CUSTOMER_POD=$(oc get pods -n smcp-{{ OCP_USERNAME }} -l app=customer | grep customer | awk '{ print $1}' )
 #"Executing curl in curl pod"
-oc exec -n istio-tutorial $CURL_POD curl http://preference:8080
+oc exec -n smcp-{{ OCP_USERNAME }} $CURL_POD curl http://preference:8080
 #"Executing curl in customer pod"
-oc exec -n istio-tutorial $CUSTOMER_POD -c customer curl http://preference:8080
+oc exec -n smcp-{{ OCP_USERNAME }} $CUSTOMER_POD -c customer curl http://preference:8080
 ----
 
 _Kiali’s Graph_
@@ -59,7 +59,7 @@ _Kiali’s Graph_
 Within the Kiali UI select the Graph option from the left hand navigation and
 then choose:
 
-* Namespace: istio-tutorial
+* Namespace: smcp-{{ OCP_USERNAME }}
 * Versioned app graph
 * Requests percentage
 * Last 1m
@@ -75,7 +75,7 @@ Now configure preference to use mutual TLS policy.
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/authentication-enable-tls.yml
+oc -n smcp-{{ OCP_USERNAME }} create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/authentication-enable-tls.yml
 ----
 
 The Policy just created can be seen below:
@@ -86,7 +86,7 @@ apiVersion: "authentication.istio.io/v1alpha1"
 kind: "Policy"
 metadata:
   name: "preference-mutualtls"
-  namespace: istio-tutorial
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
   targets:
   - name: preference
@@ -106,12 +106,12 @@ Try running the load once in the upper terminal
 
 [source,bash,role="execute-1"]
 ----
-export CURL_POD=$(oc get pods -n istio-tutorial -l app=curl | grep curl | awk '{ print $1}' )
-export CUSTOMER_POD=$(oc get pods -n istio-tutorial -l app=customer | grep customer | awk '{ print $1}' )
+export CURL_POD=$(oc get pods -n smcp-{{ OCP_USERNAME }} -l app=curl | grep curl | awk '{ print $1}' )
+export CUSTOMER_POD=$(oc get pods -n smcp-{{ OCP_USERNAME }} -l app=customer | grep customer | awk '{ print $1}' )
 #"Executing curl in curl pod"
-oc exec -n istio-tutorial $CURL_POD curl http://preference:8080
+oc exec -n smcp-{{ OCP_USERNAME }} $CURL_POD curl http://preference:8080
 #"Executing curl in customer pod"
-oc exec -n istio-tutorial $CUSTOMER_POD -c customer curl http://preference:8080
+oc exec -n smcp-{{ OCP_USERNAME }} $CUSTOMER_POD -c customer curl http://preference:8080
 ----
 
 This time, we can see that the curl failed with exit code 56. This is because
@@ -127,7 +127,7 @@ TLS and run the curl again.
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/destination-rule-tls.yml
+oc -n smcp-{{ OCP_USERNAME }} create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/destination-rule-tls.yml
 ----
 
 The yaml just created can be seen below.
@@ -139,7 +139,7 @@ kind: "DestinationRule"
 metadata:
   name: "preference-destination-rule"
 spec:
-  host: "preference.istio-tutorial.svc.cluster.local"
+  host: "preference.smcp-{{ OCP_USERNAME }}.svc.cluster.local"
   trafficPolicy:
     tls:
       mode: ISTIO_MUTUAL
@@ -156,12 +156,12 @@ Try running the load once in the upper terminal
 
 [source,bash,role="execute-1"]
 ----
-export CURL_POD=$(oc get pods -n istio-tutorial -l app=curl | grep curl | awk '{ print $1}' )
-export CUSTOMER_POD=$(oc get pods -n istio-tutorial -l app=customer | grep customer | awk '{ print $1}' )
+export CURL_POD=$(oc get pods -n smcp-{{ OCP_USERNAME }} -l app=curl | grep curl | awk '{ print $1}' )
+export CUSTOMER_POD=$(oc get pods -n smcp-{{ OCP_USERNAME }} -l app=customer | grep customer | awk '{ print $1}' )
 #"Executing curl in curl pod"
-oc exec -n istio-tutorial $CURL_POD curl http://preference:8080
+oc exec -n smcp-{{ OCP_USERNAME }} $CURL_POD curl http://preference:8080
 #"Executing curl in customer pod"
-oc exec -n istio-tutorial $CUSTOMER_POD -c customer curl http://preference:8080
+oc exec -n smcp-{{ OCP_USERNAME }} $CUSTOMER_POD -c customer curl http://preference:8080
 ----
 
 And again: exit code 56
@@ -187,14 +187,14 @@ First, delete the policy we created above.
 
 [source,bash,role="execute-1"]
 ----
-oc delete policy -n istio-tutorial preference-mutualtls
+oc delete policy -n smcp-{{ OCP_USERNAME }} preference-mutualtls
 ----
 
 Now create a policy using permissive mode. 
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/policy-permissive-tls.yml
+oc -n smcp-{{ OCP_USERNAME }} create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/policy-permissive-tls.yml
 ----
 
 The contents of the file are displayed below:
@@ -205,7 +205,7 @@ apiVersion: "authentication.istio.io/v1alpha1"
 kind: "Policy"
 metadata:
   name: "preference-mutualtls"
-  namespace: istio-tutorial
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
   targets:
   - name: preference
@@ -225,12 +225,12 @@ Try running the load once in the upper terminal
 
 [source,bash,role="execute-1"]
 ----
-export CURL_POD=$(oc get pods -n istio-tutorial -l app=curl | grep curl | awk '{ print $1}' )
-export CUSTOMER_POD=$(oc get pods -n istio-tutorial -l app=customer | grep customer | awk '{ print $1}' )
+export CURL_POD=$(oc get pods -n smcp-{{ OCP_USERNAME }} -l app=curl | grep curl | awk '{ print $1}' )
+export CUSTOMER_POD=$(oc get pods -n smcp-{{ OCP_USERNAME }} -l app=customer | grep customer | awk '{ print $1}' )
 #"Executing curl in curl pod"
-oc exec -n istio-tutorial $CURL_POD curl http://preference:8080
+oc exec -n smcp-{{ OCP_USERNAME }} $CURL_POD curl http://preference:8080
 #"Executing curl in customer pod"
-oc exec -n istio-tutorial $CUSTOMER_POD -c customer curl http://preference:8080
+oc exec -n smcp-{{ OCP_USERNAME }} $CUSTOMER_POD -c customer curl http://preference:8080
 ----
 
 In Kiali, we can see that the lock is still shown, indicating the presence of
@@ -246,6 +246,6 @@ To cleanup, delete both the policy and destination rule that we created.
 
 [source,bash,role="execute-1"]
 ----
-oc delete policy -n istio-tutorial preference-mutualtls
-oc delete destinationrule -n istio-tutorial preference-destination-rule
+oc delete policy -n smcp-{{ OCP_USERNAME }} preference-mutualtls
+oc delete destinationrule -n smcp-{{ OCP_USERNAME }} preference-destination-rule
 ----

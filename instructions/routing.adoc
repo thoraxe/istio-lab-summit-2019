@@ -23,7 +23,7 @@ To check the configuration run the following command
 
 [source,bash,role="execute-1"]
 ----
-oc get istio-io -n istio-tutorial
+oc get istio-io -n smcp-{{ OCP_USERNAME }}
 ----
 
 and check for output similar to the following:
@@ -73,7 +73,7 @@ command
 
 [source,bash,role="execute-2"]
 ----
-export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+export INGRESS_GATEWAY=$(oc get route -n smcp-{{ OCP_USERNAME }} istio-ingressgateway -o 'jsonpath={.spec.host}')
 #A load generating script is running in the next step. Ctrl+C to stop
 while : ; do curl http://${INGRESS_GATEWAY}/ &> /dev/null ; sleep 1 ; done
 ----
@@ -154,7 +154,7 @@ execute the following command:
 
 [source,bash,role="execute-1"]
 ----
-oc create -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-weighted.yaml
+oc create -n smcp-{{ OCP_USERNAME }} -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-weighted.yaml
 ----
 
 Switch over to the Kiali console to watch the traffic shifting from the
@@ -186,7 +186,7 @@ Or substitute whatever installed editor you like.
 //TODO change to oc patch or similar
 [source,bash,role="execute-1"]
 ----
-oc edit VirtualService recommendation -n istio-tutorial
+oc edit VirtualService recommendation -n smcp-{{ OCP_USERNAME }}
 ----
 
 Within the editor update the weight of the version-v1 destination to _20_ and
@@ -201,7 +201,7 @@ Switch to the terminal and execute the following command
 
 [source,bash,role="execute-1"]
 ----
-oc delete -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-weighted.yaml
+oc delete -n smcp-{{ OCP_USERNAME }} -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-weighted.yaml
 ----
 
 The traffic should now return to the default distribution with roughly 33%
@@ -259,7 +259,7 @@ execute the following command:
 
 [source,bash,role="execute-1"]
 ----
-oc create -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-canary.yaml
+oc create -n smcp-{{ OCP_USERNAME }} -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-canary.yaml
 ----
 
 Switch back to the terminal running the load script and you will notice the
@@ -277,7 +277,7 @@ Switch to a terminal and execute the following commands:
 
 [source,bash,role="execute-2"]
 ----
-export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+export INGRESS_GATEWAY=$(oc get route -n smcp-{{ OCP_USERNAME }} istio-ingressgateway -o 'jsonpath={.spec.host}')
 curl -H "user-location: Boston" http://${INGRESS_GATEWAY}/
 ----
 
@@ -291,7 +291,7 @@ Switch to the terminal and execute the following command:
 
 [source,bash,role="execute-1"]
 ----
-oc delete -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-canary.yaml
+oc delete -n smcp-{{ OCP_USERNAME }} -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-canary.yaml
 ----
 
 The traffic should now return to the default distribution with roughly 33%
@@ -350,7 +350,7 @@ the recommendation service.
 Now on Kiali, 
 
 - Go to Workloads section.
-- Choose Namespace: istio-tutorial
+- Choose Namespace: smcp-{{ OCP_USERNAME }}
 - Select "recommendation-v3" deployment
 - Click on logs
 
@@ -365,7 +365,7 @@ execute the following command:
 
 [source,bash,role="execute-1"]
 ----
-oc create -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-mirroring.yaml
+oc create -n smcp-{{ OCP_USERNAME }} -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-mirroring.yaml
 ----
 
 Switch back to the terminal running the load script and you will notice the
@@ -391,7 +391,7 @@ From within the same terminal execute the following command:
 
 [source,bash,role="execute-1"]
 ----
-oc delete -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-mirroring.yaml
+oc delete -n smcp-{{ OCP_USERNAME }} -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/routing-mirroring.yaml
 ----
 
 The traffic should now return to the default distribution with roughly 33%

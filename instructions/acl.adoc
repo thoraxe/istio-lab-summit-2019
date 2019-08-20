@@ -12,12 +12,12 @@ which control what services a service is able to access.
 .Before Start
 ====
 You should have only the following virtualservices and destinationrules in
-the `istio-tutorial` namespace:
+the `smcp-{{ OCP_USERNAME }}` namespace:
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial get destinationrule
-oc -n istio-tutorial get virtualservice
+oc -n smcp-{{ OCP_USERNAME }} get destinationrule
+oc -n smcp-{{ OCP_USERNAME }} get virtualservice
 ----
 
 And you should see something like the following:
@@ -53,7 +53,7 @@ You can also run command below a couple times to see what the output from the sh
 
 [source,bash,role="execute-1"]
 ----
-export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+export INGRESS_GATEWAY=$(oc get route -n smcp-{{ OCP_USERNAME }} istio-ingressgateway -o 'jsonpath={.spec.host}')
 curl http://${INGRESS_GATEWAY}
 ----
 
@@ -80,7 +80,7 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: listchecker
 metadata:
   name: preferencewhitelist
-  namespace: istio-tutorial
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
   overrides: ["v1", "v3"]
   blacklist: false
@@ -89,7 +89,7 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: listentry
 metadata:
   name: preferencesource
-  namespace: istio-tutorial
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
   value: destination.labels["version"]
 ---
@@ -97,7 +97,7 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: rule
 metadata:
   name: checktorecommendation
-  namespace: istio-tutorial
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
   match: destination.labels["app"] == "recommendation"
   actions:
@@ -138,7 +138,7 @@ Run below once or twice to see actual output
 
 [source,bash,role="execute-1"]
 ----
-export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+export INGRESS_GATEWAY=$(oc get route -n smcp-{{ OCP_USERNAME }} istio-ingressgateway -o 'jsonpath={.spec.host}')
 curl http://${INGRESS_GATEWAY}
 ----
 
@@ -167,7 +167,7 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: denier
 metadata:
   name: denycustomerhandler
-  namespace: istio-tutorial
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
   status:
     code: 7
@@ -177,14 +177,14 @@ apiVersion: "config.istio.io/v1alpha2"
 kind: checknothing
 metadata:
   name: denycustomerrequests
-  namespace: istio-tutorial
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
 ---
 apiVersion: "config.istio.io/v1alpha2"
 kind: rule
 metadata:
   name: denycustomer
-  namespace: istio-tutorial
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
   match: source.labels["app"]=="preference" && destination.labels["app"] == "recommendation"  && destination.labels["version"] == "v3"
   actions:
