@@ -9,12 +9,12 @@ We will also see how to use the Service Mesh authorization feature to provide ac
 .Before Start
 ====
 You should have only the following virtualservices and destinationrules in
-the `istio-tutorial` namespace:
+the `smcp-{{ OCP_USERNAME }}` namespace:
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial get destinationrule
-oc -n istio-tutorial get virtualservice
+oc -n smcp-{{ OCP_USERNAME }} get destinationrule
+oc -n smcp-{{ OCP_USERNAME }} get virtualservice
 ----
 
 And you should see something like the following:
@@ -39,7 +39,7 @@ Execute the following a couple times
 
 [source,bash,role="execute-2"]
 ----
-export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+export INGRESS_GATEWAY=$(oc get route -n smcp-{{ OCP_USERNAME }} istio-ingressgateway -o 'jsonpath={.spec.host}')
 curl http://${INGRESS_GATEWAY}
 ----
 
@@ -81,7 +81,7 @@ And then run the following to deploy the policy:
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/policy-jwt.yaml
+oc -n smcp-{{ OCP_USERNAME }} create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/policy-jwt.yaml
 ----
 
 You will see something like:
@@ -94,7 +94,7 @@ Then let's run the curl again:
 
 [source,bash,role="execute-2"]
 ----
-export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+export INGRESS_GATEWAY=$(oc get route -n smcp-{{ OCP_USERNAME }} istio-ingressgateway -o 'jsonpath={.spec.host}')
 curl http://${INGRESS_GATEWAY}
 ----
 
@@ -109,7 +109,7 @@ Origin authentication failed.
 Within the Kiali UI select the *Graph* option from the left hand navigation
 and then choose
 
-* Namespace: istio-tutorial
+* Namespace: smcp-{{ OCP_USERNAME }}
 * Versioned app graph
 * Requests percentage
 * Last 1m
@@ -128,7 +128,7 @@ To get a correct token, we need to pass the token in the http request. Let's run
 
 [source,bash,role="execute-2"]
 ----
-export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+export INGRESS_GATEWAY=$(oc get route -n smcp-{{ OCP_USERNAME }} istio-ingressgateway -o 'jsonpath={.spec.host}')
 TOKEN=$(curl https://raw.githubusercontent.com/istio/istio/release-1.1/security/tools/jwt/samples/demo.jwt -s)
 curl --header "Authorization: Bearer $TOKEN" $INGRESS_GATEWAY -s
 ----
@@ -151,7 +151,7 @@ customer => preference => recommendation v1 from '7f8755bb79-vjwq2': 27142
 Within the Kiali UI select the *Graph* option from the left hand navigation
 and then choose
 
-* Namespace: istio-tutorial
+* Namespace: smcp-{{ OCP_USERNAME }}
 * Versioned app graph
 * Requests percentage
 * Last 1m
@@ -168,7 +168,7 @@ Note the 100% success rate from the authenticated end-user to customer
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/policy-jwt.yaml
+oc -n smcp-{{ OCP_USERNAME }} delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/policy-jwt.yaml
 ----
 
 You will see something like:
@@ -195,14 +195,14 @@ metadata:
 spec:
   mode: 'ON_WITH_INCLUSION'
   inclusion:
-    namespaces: ["istio-tutorial"]
+    namespaces: ["smcp-{{ OCP_USERNAME }}"]
 ----
 
 Run this command to deploy the RBAC:
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/authorization-enable-rbac.yml
+oc -n smcp-{{ OCP_USERNAME }} create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/authorization-enable-rbac.yml
 ----
 
 You will see something like:
@@ -217,7 +217,7 @@ Then let's run the curl to test the RBAC:
 
 [source,bash,role="execute-2"]
 ----
-export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+export INGRESS_GATEWAY=$(oc get route -n smcp-{{ OCP_USERNAME }} istio-ingressgateway -o 'jsonpath={.spec.host}')
 curl http://${INGRESS_GATEWAY}
 ----
 
@@ -232,7 +232,7 @@ Origin authentication failed.
 Within the Kiali UI select the *Graph* option from the left hand navigation
 and then choose
 
-* Namespace: istio-tutorial
+* Namespace: smcp-{{ OCP_USERNAME }}
 * Versioned app graph
 * Requests percentage
 * Last 1m
@@ -276,7 +276,7 @@ apiVersion: "rbac.istio.io/v1alpha1"
 kind: ServiceRoleBinding
 metadata:
   name: bind-service-viewer
-  namespace: istio-tutorial
+  namespace: smcp-{{ OCP_USERNAME }}
 spec:
   subjects:
   - user: "*"
@@ -285,7 +285,7 @@ spec:
     name: "service-viewer"
 ----
 
-Note the ServiceRole `service-viewer` is bound to the `istio-tutorial`
+Note the ServiceRole `service-viewer` is bound to the `smcp-{{ OCP_USERNAME }}`
 namespace for all users (*) and limits access to the GET method for the three
 services.
 
@@ -293,7 +293,7 @@ Run this command to deploy the role and role binding:
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/namespace-rbac-policy.yml
+oc -n smcp-{{ OCP_USERNAME }} create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/namespace-rbac-policy.yml
 ----
 
 You will see something like:
@@ -307,7 +307,7 @@ Let's send a request now:
 
 [source,bash,role="execute-2"]
 ----
-export INGRESS_GATEWAY=$(oc get route -n istio-system istio-ingressgateway -o 'jsonpath={.spec.host}')
+export INGRESS_GATEWAY=$(oc get route -n smcp-{{ OCP_USERNAME }} istio-ingressgateway -o 'jsonpath={.spec.host}')
 curl http://${INGRESS_GATEWAY}
 ----
 
@@ -330,7 +330,7 @@ The communication now is possible.
 Within the Kiali UI select the *Graph* option from the left hand navigation
 and then choose:
 
-* Namespace: istio-tutorial
+* Namespace: smcp-{{ OCP_USERNAME }}
 * Versioned app graph
 * Requests percentage
 * Last 1m
@@ -347,8 +347,8 @@ Note the 100% success rate due to allowed RBAC.
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/namespace-rbac-policy.yml
-oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/authorization-enable-rbac.yml
+oc -n smcp-{{ OCP_USERNAME }} delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/namespace-rbac-policy.yml
+oc -n smcp-{{ OCP_USERNAME }} delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/authorization-enable-rbac.yml
 ----
 
 You will see something like:

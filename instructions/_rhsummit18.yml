@@ -8,6 +8,7 @@ vars:
   KUBEADMIN_PASSWORD: "default"
   API_URL: "default"
   MASTER_URL: "default"
+  OCP_USERNAME: "defaultocpusername"
 
 modules:
   activate:

@@ -15,12 +15,12 @@ delays to better understand, test, and design microservices.
 .Before Start
 ====
 You should have only the following virtualservices and destinationrules in
-the `istio-tutorial` namespace:
+the `smcp-{{ OCP_USERNAME }}` namespace:
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial get destinationrule
-oc -n istio-tutorial get virtualservice
+oc -n smcp-{{ OCP_USERNAME }} get destinationrule
+oc -n smcp-{{ OCP_USERNAME }} get virtualservice
 ----
 
 And you should see something like the following:
@@ -41,7 +41,7 @@ that is the default behavior in Service Mesh.
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial get pods -l app=recommendation
+oc -n smcp-{{ OCP_USERNAME }} get pods -l app=recommendation
 ----
 
 You will see something like:
@@ -127,7 +127,7 @@ failure rate is accurately reflected in the Kiali console.
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-503.yml
+oc -n smcp-{{ OCP_USERNAME }} create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-503.yml
 ----
 
 You will see something like:
@@ -142,7 +142,7 @@ virtualservice.networking.istio.io/recommendation created
 Within the Kiali UI select the *Graph* option from the left hand navigation
 and then choose:
 
-* Namespace: istio-tutorial
+* Namespace: smcp-{{ OCP_USERNAME }}
 * Versioned app graph
 * Requests percentage
 * Last 1m
@@ -158,7 +158,7 @@ Note the 50% failure rate from preference to recommendation.
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-503.yml
+oc -n smcp-{{ OCP_USERNAME }} delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-503.yml
 ----
 
 You will see something like:
@@ -232,7 +232,7 @@ introduces a 7s delay for 50% of the requests.
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-delay.yml
+oc -n smcp-{{ OCP_USERNAME }} create -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-delay.yml
 ----
 
 You will see something like:
@@ -249,12 +249,12 @@ see the delay happens BEFORE the recommendation service is actually called.
 //TODO: switch to automated command
 [NOTE]
 ====
-Use `oc get pods -n istio-tutorial` to find the `recommendation` pods to look at the logs.
+Use `oc get pods -n smcp-{{ OCP_USERNAME }}` to find the `recommendation` pods to look at the logs.
 ====
 
 [source,bash,subs="+macros,+attributes",role="copypaste copypaste-warning"]
 ----
-oc -n istio-tutorial logs -f recommendation-v#-XXXXXXXXXXXX -c recommendation
+oc -n smcp-{{ OCP_USERNAME }} logs -f recommendation-v#-XXXXXXXXXXXX -c recommendation
 ----
 
 You will see something like:
@@ -271,8 +271,8 @@ INFO: recommendation request from 7fbb8f794-ngw58: 8335
 Within the Kiali UI select the *Distributed Tracing* option from the left
 hand navigation and then choose:
 
-* Namespace: istio-tutorial
-* Service: recommendation.istio-tutorial
+* Namespace: smcp-{{ OCP_USERNAME }}
+* Service: recommendation.smcp-{{ OCP_USERNAME }}
 
 and finally press the *Search* button.
 
@@ -287,7 +287,7 @@ the other 50% are in the low ms range.
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-delay.yml
+oc -n smcp-{{ OCP_USERNAME }} delete -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-delay.yml
 ----
  
 You will see something like:

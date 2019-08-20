@@ -13,12 +13,12 @@ circuit breaking. This module will also how to visualize these capabilities in K
 .Before Start
 ====
 You should have only the following virtualservices and destinationrules in
-the `istio-tutorial` namespace:
+the `smcp-{{ OCP_USERNAME }}` namespace:
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial get destinationrule
-oc -n istio-tutorial get virtualservice
+oc -n smcp-{{ OCP_USERNAME }} get destinationrule
+oc -n smcp-{{ OCP_USERNAME }} get virtualservice
 ----
 
 And you should see something like the following:
@@ -41,7 +41,7 @@ accordingly:
 
 [source,bash,role="execute-1"]
 ----
-oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s localhost:8080/misbehave
+oc exec -n smcp-{{ OCP_USERNAME }} -c recommendation $(oc get pod -n smcp-{{ OCP_USERNAME }} -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s localhost:8080/misbehave
 ----
 
 You will see something like:
@@ -78,7 +78,7 @@ Now, make the pod v2 behave well again:
 
 [source,bash,role="execute-1"]
 ----
-oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s localhost:8080/behave
+oc exec -n smcp-{{ OCP_USERNAME }} -c recommendation $(oc get pod -n smcp-{{ OCP_USERNAME }} -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s localhost:8080/behave
 ----
 
 You will see something like:
@@ -100,7 +100,7 @@ performer with a 3 second delay by running the command
 
 [source,bash,role="execute-1"]
 ----
-oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=3
+oc exec -n smcp-{{ OCP_USERNAME }} -c recommendation $(oc get pod -n smcp-{{ OCP_USERNAME }} -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=3
 ----
 
 You will see something like:
@@ -155,7 +155,7 @@ We will now execute create this object.
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial create -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-timeout.yml
+oc -n smcp-{{ OCP_USERNAME }} create -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-timeout.yml
 ----
 
 You will see something like:
@@ -182,7 +182,7 @@ delay of 3 seconds:
 
 [source,bash,role="execute-1"]
 ----
-oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=0
+oc exec -n smcp-{{ OCP_USERNAME }} -c recommendation $(oc get pod -n smcp-{{ OCP_USERNAME }} -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=0
 ----
 
 You will see something like:
@@ -195,7 +195,7 @@ Then delete the virtual service created for timeout by:
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial delete -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-timeout.yml
+oc -n smcp-{{ OCP_USERNAME }} delete -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-timeout.yml
 ----
 
 You will see something like:
@@ -258,7 +258,7 @@ Note the weighting of the 3 recommendation destination versions.
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial apply -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-split.yml
+oc -n smcp-{{ OCP_USERNAME }} apply -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-split.yml
 ----
 
 You will see something like:
@@ -284,7 +284,7 @@ performer with a 3 second delay by running the command:
 
 [source,bash,role="execute-1"]
 ----
-oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=3
+oc exec -n smcp-{{ OCP_USERNAME }} -c recommendation $(oc get pod -n smcp-{{ OCP_USERNAME }} -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=3
 ----
 
 You will see something like:
@@ -358,7 +358,7 @@ where 100% of single consecutive errors fail.
 
 [source,bash,role="execute-1"]
 ----
-oc apply -n istio-tutorial -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml
+oc apply -n smcp-{{ OCP_USERNAME }} -f https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/destination-rule-recommendation_cb_policy_version_v2.yml
 ----
 
 You will see something like:
@@ -395,7 +395,7 @@ delay of 3 seconds:
 
 [source,bash,role="execute-1"]
 ----
-oc exec -n istio-tutorial -c recommendation $(oc get pod -n istio-tutorial -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=0
+oc exec -n smcp-{{ OCP_USERNAME }} -c recommendation $(oc get pod -n smcp-{{ OCP_USERNAME }} -l 'app=recommendation,version=v2' -o jsonpath='{..metadata.name}') -- curl -s http://localhost:8080/timeout?timeout=0
 ----
 
 You will see something like:
@@ -408,7 +408,7 @@ Then delete the virtual service created for circuit braking by:
 
 [source,bash,role="execute-1"]
 ----
-oc -n istio-tutorial delete -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-split.yml
+oc -n smcp-{{ OCP_USERNAME }} delete -f  https://raw.githubusercontent.com/thoraxe/istio-lab-summit-2019/master/src/istiofiles/virtual-service-recommendation-split.yml
 ----
 
 You will see something like:
